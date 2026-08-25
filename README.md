@@ -1,3 +1,5 @@
+程序还有点瑕疵，也没封装多平台安装包，但博主token不够用了，这礼拜先不改了
+
 # AI海报文字快改 / AI Poster Text Editor
 
 [在线使用 / Live app](https://7panni.github.io/ai-poster-text-editor/)
