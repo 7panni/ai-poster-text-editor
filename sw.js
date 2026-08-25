@@ -1,4 +1,4 @@
-const CACHE = 'ai-poster-text-editor-v2';
+const CACHE = 'ai-poster-text-editor-v3';
 const ASSETS = ['./', './index.html', './vendor/source-editor.js', './layout.json', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', event => {

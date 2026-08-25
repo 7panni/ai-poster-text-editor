@@ -1,0 +1,24 @@
+{
+&#x20; id: "ai",
+&#x20; text: "AI",
+&#x20; x: 945, y: 198,
+&#x20; width: 130,
+&#x20; fontSize: 82,
+&#x20; fontFamily: "Noto Serif",
+&#x20; fontWeight: 600,
+&#x20; color: "#2F5065",
+&#x20; align: "center",
+&#x20; letterSpacing: 0
+},
+{
+&#x20; id: "engineer",
+&#x20; text: "工程师",
+&#x20; x: 1060, y: 205,
+&#x20; width: 330,
+&#x20; fontSize: 72,
+&#x20; fontFamily: "Noto Serif SC",
+&#x20; fontWeight: 600,
+&#x20; color: "#2F5065",
+&#x20; align: "center",
+&#x20; letterSpacing: 2
+}

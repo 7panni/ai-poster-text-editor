@@ -16,13 +16,13 @@ AI-generated posters often contain misspelled, garbled, or poorly positioned tex
 
 ## 使用 / Use
 
-点“替换背景”选择无文字背景图，也可以把图片直接拖到画布上；再点“导入排版”，或在右侧 `layout.json` 页粘贴 AI 给出的代码。点击或拖动画布中的文字，在右侧改内容、字体、字号、颜色和位置；点击空白处或按 `Esc` 可取消选择。完成后保存排版，或导出 PNG。
+点“替换背景”选择无文字背景图，也可以把图片直接拖到画布上；再点“导入排版”，或在右侧 `layout.json` 页粘贴 AI 给出的代码。点击或拖动画布中的文字，在右侧改内容、字体、字号、字距、行高、颜色和位置；点击空白处或按 `Esc` 可取消选择。字号、字距、行高、X、Y 均可用 `− / ＋` 微调，按住 Shift 点击使用大步长。完成后可保存排版、导出 PNG，或点“全部导出”把 PNG 与 layout 保存到同一文件夹。
 
 Choose a text-free image with “Replace background,” or drag an image directly onto the canvas. Import a layout or paste AI-generated code into the `layout.json` panel, adjust the text, then save the editable layout or export a PNG.
 
-“设置”里的保存位置有三种：浏览器默认下载位置、上次使用的文件夹、背景图片所在文件夹。受浏览器隐私限制，网页无法自动读取上传图片的真实路径，因此第一次选择“图片同文件夹”时需要确认一次该文件夹。Chrome 和 Edge 支持固定文件夹；不支持此能力的浏览器会回退到默认下载位置。
+“保存排版”和“导出 PNG”各有独立下拉菜单，可另存或使用上次授权的文件夹；通过文件选择器打开的 layout 可由主按钮快速覆盖。“全部导出”会把 PNG 与 layout 写入同一文件夹。不支持文件夹权限的浏览器会回退为下载两个文件。网页无法自动读取普通上传图片的原文件夹。字体框会提示当前字体是否可用，特殊字体可通过“加载本地字体”临时加载。源码编辑器还会清理 Markdown 围栏和 HTML 空格实体，接受单独的文字对象片段；完整 layout（含 `canvas`）会替换全部文字，片段（缺少 `canvas`）按 `id` 合并：相同 `id` 更新、新 `id` 追加、其他图层保留。右侧面板底部提供危险色“清空全部文字”按钮，导入空 `texts` 数组会被拒绝。背景和排版会自动保存在本机 IndexedDB，刷新后恢复上次会话；设置里可“清除上次会话”，数据不会上传。
 
-The Settings menu offers the browser download folder, the last-used folder, or the background image folder. Browsers do not reveal an uploaded file's real path, so “With background image” requires one folder confirmation. Chrome and Edge support direct folder writing; other browsers fall back to normal downloads.
+The Settings menu offers the browser download folder, the last-used folder, or the background image folder. Browsers do not reveal an uploaded file's real path, so “With background image” requires one folder confirmation. Chrome and Edge support direct folder writing; other browsers fall back to normal downloads. The source editor also cleans common AI artifacts such as Markdown fences and HTML space entities and accepts standalone text-object fragments. A full layout (with `canvas`) replaces all texts; a fragment (without `canvas`) merges by `id`: matching ids are updated, new ids are appended, other layers stay untouched. A danger-colored “Clear all texts” button sits at the bottom of the right panel, and importing an empty `texts` array is rejected. The background and layout are stored locally in IndexedDB so the last session is restored after a refresh; the settings menu offers “Clear last session”, and nothing is ever uploaded.
 
 ## 使用与安装 / Use and installation
 
@@ -151,6 +151,12 @@ Strictly separate the background artwork from all text layers:
 Deliver in this order: background.png → layout.json → design-notes.md. Before delivery, verify that the background contains no text, the JSON parses successfully, and all text coordinates stay inside the canvas.
 ```
 
+## 后续开发计划（暂停）/ Roadmap (paused)
+
+原生 Tauri 安装包仍处于暂停状态。保存与导出分裂菜单、快速覆盖排版及 PNG + layout 一键同目录导出已在本地版本完成，发布前仍需用户实机验收。
+
+Save and export will become two clearly separated split buttons instead of sharing a global destination setting. `Save layout ▾` will manage the editable source: overwrite an imported writable file by default, or use Save As for a new or pasted layout. `Export ▾` will default to Save PNG As, with options for the background-image folder, the last-used folder, or exporting PNG and `layout.json` together. Browser path restrictions require file handles or one-time folder permission. This work is planned but currently paused and has not entered development.
+
 ## 开发 / Development
 
 ```bash
@@ -170,6 +176,6 @@ Runtime files are `index.html`, `vendor/source-editor.js`, and the sample `layou
 ## 作者 / Credits
 
 - 开发者 / Developer: 尚宸鸣 / Vijjādassī Shang
-- 使用 Codex 协助开发 / Developed with Codex assistance
+- 使用 Codex & 牛来 协助开发 / Developed with assistance from Codex & 牛来
 - 项目 / Project: [github.com/7panni/ai-poster-text-editor](https://github.com/7panni/ai-poster-text-editor)
 - 作者博客 / Author blog: [7panni.com](https://7panni.com)

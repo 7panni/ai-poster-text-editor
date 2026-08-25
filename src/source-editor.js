@@ -5,16 +5,29 @@ import { linter, lintGutter } from '@codemirror/lint';
 import JSON5 from 'json5';
 
 function cleanLooseJson(raw) {
-  let cleaned = raw.replace(/^\s*```[^\r\n]*\s*$/gmi, '').replace(/\\_/g, '_').trim();
+  let cleaned = String(raw ?? '')
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&(nbsp|quot|apos|amp|lt|gt);/gi, entity => ({ '&nbsp;':' ', '&quot;':'"', '&apos;':"'", '&amp;':'&', '&lt;':'<', '&gt;':'>' }[entity.toLowerCase()]))
+    .replace(/^\s*```[^\r\n]*\s*$/gmi, '').replace(/\\_/g, '_').trim();
   const first = cleaned.indexOf('{');
   const last = cleaned.lastIndexOf('}');
   if (first > 0 || last < cleaned.length - 1) cleaned = first >= 0 && last > first ? cleaned.slice(first, last + 1) : cleaned;
   return cleaned;
 }
 
+function parseLoose(value) {
+  const cleaned = cleanLooseJson(value);
+  try { return JSON5.parse(cleaned); }
+  catch (error) {
+    try { return JSON5.parse(`[${cleaned}]`); }
+    catch { throw error; }
+  }
+}
+
 function jsonLinter(view) {
   try {
-    JSON5.parse(cleanLooseJson(view.state.doc.toString()));
+    parseLoose(view.state.doc.toString());
     return [];
   } catch (error) {
     const message = String(error.message || 'JSON 格式错误');
@@ -37,7 +50,7 @@ const theme = EditorView.theme({
 }, { dark: true });
 
 window.CoverSourceEditor = {
-  parseLoose(value) { return JSON5.parse(value); },
+  parseLoose,
   create(host, { doc, onChange }) {
     let suppressChange = false;
     const view = new EditorView({
