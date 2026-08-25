@@ -39,7 +39,7 @@
     .brand { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
     .brand b { font-size: 16px; letter-spacing: .06em; color: var(--gold-hi); }
     .brand span { color: var(--fog); font-size: 11px; }
-    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .top-actions { position: relative; display: flex; align-items: center; gap: 6px; }
     button, .file-button {
       border: 1px solid var(--line); background: var(--ink-2); border-radius: 7px; padding: 8px 11px;
       cursor: pointer; transition: border-color .15s, background .15s, transform .15s;
@@ -52,11 +52,35 @@
     button:disabled { opacity: .38; cursor: default; transform: none; }
     .file-button { display: inline-flex; align-items: center; }
     .file-button input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .toolbar-button {
+      height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 0 10px; border-color: rgba(233,223,195,.16); border-radius: 8px;
+      background: #17241e; color: #dce3dd; font-size: 12px; font-weight: 600; white-space: nowrap;
+      box-shadow: inset 0 1px rgba(255,255,255,.025), 0 1px 2px rgba(0,0,0,.16);
+    }
+    .toolbar-button svg { width: 15px; height: 15px; flex: none; color: #b8c3bb; }
+    .toolbar-button:hover { color: #fff7df; background: #213129; border-color: rgba(239,209,138,.42); }
+    .toolbar-button:hover svg { color: var(--gold-hi); }
+    .toolbar-button.primary { color: #142019; background: #d5b66f; border-color: #d5b66f; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+    .toolbar-button.primary svg { color: #142019; }
+    .toolbar-button.compact { min-width: 38px; padding-inline: 9px; }
+    .toolbar-button[aria-expanded="true"] { color: var(--gold-hi); border-color: rgba(239,209,138,.55); background: #26372e; }
+    .settings-menu {
+      position: absolute; z-index: 30; top: 42px; right: 44px; width: 300px; padding: 12px;
+      border: 1px solid rgba(239,209,138,.24); border-radius: 10px; background: #14201b;
+      box-shadow: 0 18px 48px rgba(0,0,0,.46); color: #edf0ec;
+    }
+    .settings-menu[hidden] { display: none; }
+    .settings-title { display: flex; align-items: center; justify-content: space-between; margin: 0 0 9px; font-size: 12px; color: var(--gold-hi); }
+    .save-choice { display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: start; padding: 9px 8px; border-radius: 7px; cursor: pointer; }
+    .save-choice:hover { background: rgba(255,255,255,.035); }
+    .save-choice input { margin: 2px 0 0; accent-color: var(--gold); }
+    .save-choice b { display: block; margin-bottom: 2px; font-size: 12px; font-weight: 650; }
+    .save-choice small { display: block; color: #8f9d94; font-size: 10px; line-height: 1.45; }
+    .settings-folder { width: 100%; margin-top: 8px; padding: 8px 10px; color: var(--paper); font-size: 11px; }
 
-    .workspace { min-height: 0; display: grid; grid-template-columns: 92px minmax(320px, 1fr) 380px; }
+    .workspace { min-height: 0; display: grid; grid-template-columns: minmax(320px, 1fr) 380px; }
     .panel { min-height: 0; background: #15211c; }
-    .tools-panel { border-right: 1px solid var(--line); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px 8px; gap: 8px; }
-    .tools-panel button, .tools-panel .file-button { min-height: 58px; width: 100%; padding: 8px 5px; justify-content: center; text-align: center; line-height: 1.3; font-size: 12px; }
     .properties-panel { border-left: 1px solid var(--line); display: grid; grid-template-rows: 48px minmax(0,1fr); overflow: hidden; }
     .panel-head { height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; border-bottom: 1px solid var(--line); }
     .panel-head h2 { margin: 0; font-size: 12px; letter-spacing: .12em; color: var(--fog); font-weight: 650; }
@@ -72,6 +96,13 @@
       background-image: radial-gradient(circle at 1px 1px, rgba(233,223,195,.09) 1px, transparent 0);
       background-size: 18px 18px;
     }
+    .stage::after {
+      content: attr(data-drop-label); position: absolute; inset: 14px; display: grid; place-items: center;
+      border: 2px dashed rgba(239,209,138,.7); border-radius: 12px; background: rgba(11,20,16,.78);
+      color: var(--gold-hi); font-size: 15px; font-weight: 700; letter-spacing: .04em;
+      opacity: 0; pointer-events: none; transition: opacity .15s;
+    }
+    .stage.drag-over::after { opacity: 1; }
     .canvas-shell { position: relative; box-shadow: 0 20px 65px rgba(0,0,0,.45); touch-action: none; user-select: none; }
     canvas { width: 100%; height: 100%; display: block; background: #ddcfaa; }
     .stage-tools { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; border-top: 1px solid var(--line); background: #101a16; color: var(--fog); font-size: 12px; }
@@ -91,6 +122,8 @@
     .source-buttons { display: flex; gap: 8px; flex: none; }
 
     .property-body { padding: 14px; }
+    .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 14px 0; }
+    .quick-actions button, .quick-actions .file-button { min-height: 42px; width: 100%; justify-content: center; text-align: center; }
     .empty-state { color: var(--fog); font-size: 13px; line-height: 1.7; padding: 18px 8px; }
     .group { border: 0; padding: 0; margin: 0 0 18px; }
     .group legend { width: 100%; padding: 0 0 8px; margin-bottom: 10px; color: var(--gold); font-size: 11px; letter-spacing: .13em; border-bottom: 1px solid var(--line); }
@@ -117,12 +150,12 @@
     @media (max-width: 900px) {
       body { overflow: auto; }
       .app { min-height: 100vh; height: auto; }
-      .workspace { grid-template-columns: 1fr; grid-template-rows: auto min(62vh, 620px) auto; }
-      .tools-panel { border-right: 0; border-bottom: 1px solid var(--line); flex-direction: row; padding: 8px; }
-      .tools-panel button, .tools-panel .file-button { min-height: 42px; }
+      .workspace { grid-template-columns: 1fr; grid-template-rows: min(62vh, 620px) auto; }
       .properties-panel { border-left: 0; border-top: 1px solid var(--line); min-height: 520px; }
       .topbar { height: auto; min-height: 56px; padding: 9px 12px; align-items: flex-start; }
       .top-actions { flex-wrap: wrap; justify-content: flex-end; }
+      .toolbar-button { padding-inline: 8px; }
+      .settings-menu { position: fixed; top: 62px; right: 10px; width: min(300px, calc(100vw - 20px)); }
       .brand span { display: none; }
       .credits { display: none; }
     }
@@ -134,24 +167,26 @@
     <header class="topbar">
       <div class="brand"><b data-i18n="appName">AI海报文字快改</b><span data-i18n="offline">本地离线</span></div>
       <div class="top-actions">
-        <button id="langToggle" title="Switch to English">EN</button>
-        <label class="file-button"><span data-i18n="changeBackground">换背景</span><input id="backgroundInput" type="file" accept="image/*"></label>
-        <label class="file-button"><span data-i18n="importLayout">导入排版</span><input id="layoutInput" type="file" accept="application/json,.json"></label>
-        <button id="chooseOutputDir" data-i18n="outputFolder">输出文件夹</button>
-        <button id="saveLayout" data-i18n="saveLayout">保存排版</button>
-        <button id="exportPng" class="primary" data-i18n="exportPng">导出 PNG</button>
+        <label id="backgroundButton" class="file-button toolbar-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h11a5 5 0 0 1 0 10H7"/><path d="m8 13-4 4 4 4"/></svg><span data-i18n="changeBackground">替换背景</span><input id="backgroundInput" type="file" accept="image/*"></label>
+        <label id="layoutButton" class="file-button toolbar-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h4M9 13h7M9 17h5"/></svg><span data-i18n="importLayout">导入排版</span><input id="layoutInput" type="file" accept="application/json,.json,.txt,.js,text/plain"></label>
+        <button id="saveLayout" class="toolbar-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 3h12l2 2v16H5zM8 3v6h8V3M8 21v-7h8v7"/></svg><span data-i18n="saveLayout">保存排版</span></button>
+        <button id="exportPng" class="toolbar-button primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg><span data-i18n="exportPng">导出 PNG</span></button>
+        <button id="settingsButton" class="toolbar-button" aria-expanded="false" aria-controls="settingsMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.15.38.37.72.66 1 .3.28.68.42 1.1.4H21v4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg><span data-i18n="settings">设置</span></button>
+        <button id="langToggle" class="toolbar-button compact" title="Switch to English">EN</button>
+        <div id="settingsMenu" class="settings-menu" hidden>
+          <div class="settings-title"><span data-i18n="saveLocation">保存位置</span><span id="saveLocationStatus"></span></div>
+          <label class="save-choice"><input type="radio" name="saveMode" value="default"><span><b data-i18n="saveDefault">浏览器默认</b><small data-i18n="saveDefaultHint">直接保存到浏览器的下载位置</small></span></label>
+          <label class="save-choice"><input type="radio" name="saveMode" value="last"><span><b data-i18n="saveLast">上次使用</b><small data-i18n="saveLastHint">继续写入上次选择的文件夹</small></span></label>
+          <label class="save-choice"><input type="radio" name="saveMode" value="image"><span><b data-i18n="saveImageFolder">图片同文件夹</b><small data-i18n="saveImageHint">浏览器首次需要确认图片所在文件夹</small></span></label>
+          <button id="chooseSaveFolder" class="settings-folder" data-i18n="chooseFolder">选择文件夹…</button>
+        </div>
       </div>
     </header>
 
     <main id="workspace" class="workspace">
-      <aside class="panel tools-panel">
-        <button id="addText">＋<br><span data-i18n="addText">添加文字</span></button>
-        <label class="file-button">＋ <span data-i18n="loadFont">加载本地字体</span><input id="fontInput" type="file" accept=".ttf,.otf,.woff,.woff2,font/*"></label>
-      </aside>
-
       <section class="stage-wrap">
         <div id="visualMode" class="visual-mode">
-          <div id="stage" class="stage">
+          <div id="stage" class="stage" data-drop-label="拖入图片以替换背景">
             <div id="canvasShell" class="canvas-shell"><canvas id="coverCanvas"></canvas></div>
           </div>
           <div class="stage-tools">
@@ -163,7 +198,7 @@
 
       <aside class="panel properties-panel">
         <div class="panel-head"><div class="side-tabs"><button id="propertiesTab" class="active" data-i18n="textSettings">文字设置</button><button id="sourceTab">layout.json</button></div><span id="selectionHint">点击文字选择</span></div>
-        <div id="propertyPane" class="side-pane"><div id="propertyBody" class="property-body"></div></div>
+        <div id="propertyPane" class="side-pane"><div class="quick-actions"><button id="addText">＋ <span data-i18n="addText">添加文字</span></button><label class="file-button">＋ <span data-i18n="loadFont">加载本地字体</span><input id="fontInput" type="file" accept=".ttf,.otf,.woff,.woff2,font/*"></label></div><div id="propertyBody" class="property-body"></div></div>
         <div id="sourcePane" class="source-mode side-pane" hidden>
           <div id="sourceEditor" class="source-editor"></div>
           <div class="source-actions">
@@ -204,14 +239,15 @@
       let dragging = null;
       let history = [], future = [], changeTimer = null, toastTimer = null;
       let sourceEditor = null, sourceDirty = false;
-      let outputDirectoryHandle = null, backgroundBaseName = 'cover';
+      let lastDirectoryHandle = null, imageDirectoryHandle = null, backgroundBaseName = 'cover';
+      let saveMode = localStorage.getItem('posterSaveMode') || 'default';
       let currentLang = 'zh';
       const I18N = {
-        zh:{appName:'AI海报文字快改',offline:'本地离线',developer:'开发者：尚宸鸣',codexCredit:'使用 Codex 协助开发',project:'项目地址',blog:'作者博客',changeBackground:'换背景',importLayout:'导入排版',outputFolder:'输出文件夹',saveLayout:'保存排版',exportPng:'导出 PNG',addText:'添加文字',loadFont:'加载本地字体',preview:'预览',textSettings:'文字设置',pasteJson:'可直接粘贴 AI 给你的 JSON',format:'格式化',applyCanvas:'应用到画布',selected:'已选择文字',clickSelect:'点击文字选择',empty:'点击画布中的文字进行编辑。<br>点击空白处可取消选择并预览成品。',content:'内容',text:'文字',type:'字形',font:'字体',size:'字号',weight:'字重',regular:'常规',medium:'中等',bold:'粗体',black:'特粗',spacing:'字距',lineHeight:'行高',color:'颜色',left:'左',center:'中',right:'右',position:'位置',moveHint:'也可直接拖动画布中的文字。方向键微调 1 px，按住 Shift 为 10 px。',deleteText:'删除这个文字图层',sourceCleaned:'已自动清理 GPT 格式',sourceValid:'格式正确',layers:'个文字图层',cannotApply:'不能应用',componentMissing:'源码编辑组件未加载',sourceApplied:'源码已应用到画布',formatted:'已清理并统一为标准格式',newText:'新文字',backgroundChanged:'背景已换为',layoutImported:'排版已导入',cannotRead:'无法读取',fontLoaded:'字体已加载',fontFailed:'字体加载失败，请使用 TTF / OTF / WOFF',folderUnsupported:'当前浏览器不支持固定输出文件夹',outputTo:'输出到',folderFailed:'无法使用这个文件夹',saved:'已保存',exported:'已导出',saveFailed:'保存失败',pngImage:'PNG 图片',jsonLayout:'JSON 排版'},
-        en:{appName:'AI Poster Text Editor',offline:'Local & offline',developer:'Developer: Chenming Shang',codexCredit:'Developed with Codex assistance',project:'Project',blog:'Author blog',changeBackground:'Background',importLayout:'Import layout',outputFolder:'Output folder',saveLayout:'Save layout',exportPng:'Export PNG',addText:'Add text',loadFont:'Load local font',preview:'Preview',textSettings:'Text',pasteJson:'Paste AI-generated JSON here',format:'Format',applyCanvas:'Apply to canvas',selected:'Text selected',clickSelect:'Click text to select',empty:'Click text on the canvas to edit it.<br>Click an empty area to clear selection and preview the result.',content:'Content',text:'Text',type:'Typography',font:'Font',size:'Font size',weight:'Weight',regular:'Regular',medium:'Medium',bold:'Bold',black:'Black',spacing:'Letter spacing',lineHeight:'Line height',color:'Color',left:'Left',center:'Center',right:'Right',position:'Position',moveHint:'Drag text directly on the canvas. Arrow keys move 1 px; Shift + arrow moves 10 px.',deleteText:'Delete this text layer',sourceCleaned:'AI formatting cleaned',sourceValid:'Valid JSON',layers:'text layers',cannotApply:'Cannot apply',componentMissing:'Source editor failed to load',sourceApplied:'Source applied to canvas',formatted:'Cleaned and converted to standard format',newText:'New text',backgroundChanged:'Background changed to',layoutImported:'Layout imported',cannotRead:'Cannot read',fontLoaded:'Font loaded',fontFailed:'Font failed to load. Use TTF, OTF, or WOFF.',folderUnsupported:'This browser cannot use a fixed output folder',outputTo:'Output folder',folderFailed:'Cannot use this folder',saved:'Saved',exported:'Exported',saveFailed:'Save failed',pngImage:'PNG image',jsonLayout:'JSON layout'}
+        zh:{appName:'AI海报文字快改',offline:'本地离线',developer:'开发者：尚宸鸣',codexCredit:'使用 Codex 协助开发',project:'项目地址',blog:'作者博客',changeBackground:'替换背景',importLayout:'导入排版',saveLayout:'保存排版',exportPng:'导出 PNG',settings:'设置',saveLocation:'保存位置',saveDefault:'浏览器默认',saveDefaultHint:'直接保存到浏览器的下载位置',saveLast:'上次使用',saveLastHint:'继续写入上次选择的文件夹',saveImageFolder:'图片同文件夹',saveImageHint:'浏览器首次需要确认图片所在文件夹',chooseFolder:'选择文件夹…',dropBackground:'拖入图片以替换背景',folderNotSelected:'未选择',backgroundTip:'选择一张不带文字的背景图片',layoutTip:'读取已有的文字排版文件',saveTip:'保存可继续编辑的文字排版数据',exportTip:'导出背景与文字合成后的 PNG',addText:'添加文字',loadFont:'加载本地字体',preview:'预览',textSettings:'文字设置',pasteJson:'可直接粘贴 AI 给你的 JSON',format:'格式化',applyCanvas:'应用到画布',selected:'已选择文字',clickSelect:'点击文字选择',empty:'点击画布中的文字进行编辑。<br>点击空白处可取消选择并预览成品。',content:'内容',text:'文字',type:'字形',font:'字体',size:'字号',weight:'字重',regular:'常规',medium:'中等',bold:'粗体',black:'特粗',spacing:'字距',lineHeight:'行高',color:'颜色',left:'左',center:'中',right:'右',position:'位置',moveHint:'也可直接拖动画布中的文字。方向键微调 1 px，按住 Shift 为 10 px。',deleteText:'删除这个文字图层',sourceCleaned:'已自动清理 AI 格式',sourceValid:'格式正确',layers:'个文字图层',cannotApply:'不能应用',componentMissing:'源码编辑组件未加载',sourceApplied:'源码已应用到画布',formatted:'已清理并统一为标准格式',newText:'新文字',backgroundChanged:'背景已换为',layoutImported:'排版已导入',cannotRead:'无法读取',fontLoaded:'字体已加载',fontFailed:'字体加载失败，请使用 TTF / OTF / WOFF',folderUnsupported:'当前浏览器不支持文件夹保存，将使用默认下载位置',outputTo:'保存到',folderFailed:'无法使用这个文件夹',saved:'已保存',exported:'已导出',saveFailed:'保存失败',pngImage:'PNG 图片',jsonLayout:'JSON 排版'},
+        en:{appName:'AI Poster Text Editor',offline:'Local & offline',developer:'Developer: Vijjādassī Shang',codexCredit:'Developed with Codex assistance',project:'Project',blog:'Author blog',changeBackground:'Replace background',importLayout:'Import layout',saveLayout:'Save layout',exportPng:'Export PNG',settings:'Settings',saveLocation:'Save location',saveDefault:'Browser default',saveDefaultHint:'Save directly to the browser download folder',saveLast:'Last used',saveLastHint:'Keep writing to the last selected folder',saveImageFolder:'With background image',saveImageHint:'The browser asks you to confirm this folder once',chooseFolder:'Choose folder…',dropBackground:'Drop an image to replace the background',folderNotSelected:'Not selected',backgroundTip:'Choose a background image with no baked-in text',layoutTip:'Open an existing text layout file',saveTip:'Save editable text layout data',exportTip:'Export the background and text as a PNG',addText:'Add text',loadFont:'Load local font',preview:'Preview',textSettings:'Text',pasteJson:'Paste AI-generated JSON here',format:'Format',applyCanvas:'Apply to canvas',selected:'Text selected',clickSelect:'Click text to select',empty:'Click text on the canvas to edit it.<br>Click an empty area to clear selection and preview the result.',content:'Content',text:'Text',type:'Typography',font:'Font',size:'Font size',weight:'Weight',regular:'Regular',medium:'Medium',bold:'Bold',black:'Black',spacing:'Letter spacing',lineHeight:'Line height',color:'Color',left:'Left',center:'Center',right:'Right',position:'Position',moveHint:'Drag text directly on the canvas. Arrow keys move 1 px; Shift + arrow moves 10 px.',deleteText:'Delete this text layer',sourceCleaned:'AI formatting cleaned',sourceValid:'Valid layout',layers:'text layers',cannotApply:'Cannot apply',componentMissing:'Source editor failed to load',sourceApplied:'Source applied to canvas',formatted:'Cleaned and converted to standard format',newText:'New text',backgroundChanged:'Background changed to',layoutImported:'Layout imported',cannotRead:'Cannot read',fontLoaded:'Font loaded',fontFailed:'Font failed to load. Use TTF, OTF, WOFF.',folderUnsupported:'This browser cannot save to folders; using the default download location',outputTo:'Saving to',folderFailed:'Cannot use this folder',saved:'Saved',exported:'Exported',saveFailed:'Save failed',pngImage:'PNG image',jsonLayout:'JSON layout'}
       };
       function tr(key){return I18N[currentLang][key]??key;}
-      function applyLanguage(){document.documentElement.lang=currentLang==='zh'?'zh-CN':'en';document.title=tr('appName');document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=tr(el.dataset.i18n));if(outputDirectoryHandle)$('#chooseOutputDir').textContent=outputDirectoryHandle.name;$('#langToggle').textContent=currentLang==='zh'?'EN':'中文';$('#langToggle').title=currentLang==='zh'?'Switch to English':'切换到中文';renderProperties();$('#selectionHint').textContent=selected()?tr('selected'):tr('clickSelect');if(sourceEditor)validateSource(sourceEditor.getValue());}
+      function applyLanguage(){document.documentElement.lang=currentLang==='zh'?'zh-CN':'en';document.title=tr('appName');document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=tr(el.dataset.i18n));stage.dataset.dropLabel=tr('dropBackground');$('#backgroundButton').title=tr('backgroundTip');$('#layoutButton').title=tr('layoutTip');$('#saveLayout').title=tr('saveTip');$('#exportPng').title=tr('exportTip');$('#langToggle').textContent=currentLang==='zh'?'EN':'中文';$('#langToggle').title=currentLang==='zh'?'Switch to English':'切换到中文';updateSaveSettings();renderProperties();$('#selectionHint').textContent=selected()?tr('selected'):tr('clickSelect');if(sourceEditor)validateSource(sourceEditor.getValue());}
 
       function esc(v) { return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
       function selected() { return state.texts.find(t => t.id === selectedId); }
@@ -223,19 +259,33 @@
       function undo() { if (history.length < 2) return; future.push(history.pop()); restore(history.at(-1)); }
       function redo() { if (!future.length) return; const s = future.pop(); history.push(s); restore(s); }
       function toast(message) { const el=$('#toast'); el.textContent=message; el.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),1800); }
+      function updateSaveSettings() {
+        const radio=document.querySelector(`input[name="saveMode"][value="${saveMode}"]`);if(radio)radio.checked=true;
+        const handle=saveMode==='image'?imageDirectoryHandle:saveMode==='last'?lastDirectoryHandle:null;
+        $('#saveLocationStatus').textContent=handle?.name||'';
+        $('#chooseSaveFolder').hidden=saveMode==='default';
+        $('#chooseSaveFolder').textContent=handle?`${tr('chooseFolder')} · ${handle.name}`:tr('chooseFolder');
+      }
+      function setSettingsOpen(open) { $('#settingsMenu').hidden=!open;$('#settingsButton').setAttribute('aria-expanded',String(open)); }
+      function openDirectoryDb(){return new Promise((resolve,reject)=>{if(!window.indexedDB){resolve(null);return;}const request=indexedDB.open('ai-poster-text-editor',1);request.onupgradeneeded=()=>request.result.createObjectStore('directories');request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});}
+      async function storeDirectory(key,handle){try{const db=await openDirectoryDb();if(!db)return;await new Promise((resolve,reject)=>{const tx=db.transaction('directories','readwrite');tx.objectStore('directories').put(handle,key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();}catch{} }
+      async function loadDirectory(key){try{const db=await openDirectoryDb();if(!db)return null;const handle=await new Promise((resolve,reject)=>{const request=db.transaction('directories').objectStore('directories').get(key);request.onsuccess=()=>resolve(request.result||null);request.onerror=()=>reject(request.error);});db.close();return handle;}catch{return null;} }
+      async function chooseDirectoryForMode(){if(!window.showDirectoryPicker){toast(tr('folderUnsupported'));saveMode='default';localStorage.setItem('posterSaveMode',saveMode);updateSaveSettings();return null;}try{const handle=await window.showDirectoryPicker({mode:'readwrite'});lastDirectoryHandle=handle;if(saveMode==='image')imageDirectoryHandle=handle;updateSaveSettings();toast(`${tr('outputTo')}：${handle.name}`);await storeDirectory('last',handle);if(saveMode==='image')await storeDirectory('image',handle);return handle;}catch(error){if(error.name!=='AbortError')toast(tr('folderFailed'));return null;}}
+      async function writableDirectory(){if(saveMode==='default')return null;let handle=saveMode==='image'?imageDirectoryHandle:lastDirectoryHandle;if(!handle)handle=await chooseDirectoryForMode();if(!handle)return null;try{let permission=await handle.queryPermission?.({mode:'readwrite'});if(permission!=='granted')permission=await handle.requestPermission?.({mode:'readwrite'});if(permission&&permission!=='granted')return null;}catch{}return handle;}
+      async function restoreDirectories(){lastDirectoryHandle=await loadDirectory('last');imageDirectoryHandle=await loadDirectory('image');updateSaveSettings();}
       function toLayout() { return {canvas:state.canvas,texts:state.texts.map(({id,content,x,y,font,size,color,weight,letterSpacing,lineHeight,align,visible})=>({id,content,x:Math.round(x),y:Math.round(y),font,size,color,weight,letter_spacing:letterSpacing,line_height:lineHeight,align,visible}))}; }
       function layoutText() { return JSON.stringify(toLayout(), null, 2); }
       function cleanAiJson(raw) {
         const original=String(raw??'');
-        let cleaned=original.replace(/^\s*```(?:json)?\s*$/gmi,'').replace(/\\_/g,'_').trim();
+        let cleaned=original.replace(/^\s*```[^\r\n]*\s*$/gmi,'').replace(/\\_/g,'_').trim();
         const first=cleaned.indexOf('{'),last=cleaned.lastIndexOf('}');
         if(first>0||last<cleaned.length-1)cleaned=first>=0&&last>first?cleaned.slice(first,last+1):cleaned;
         return {cleaned,changed:cleaned!==original.trim()};
       }
       function parseLayout(raw) {
-        const prepared=cleanAiJson(raw);const data=JSON.parse(prepared.cleaned); if(!data || !Array.isArray(data.texts)) throw new Error('缺少 texts 数组');
+        const prepared=cleanAiJson(raw);let strict=true;try{JSON.parse(prepared.cleaned);}catch{strict=false;}const data=window.CoverSourceEditor?.parseLoose?window.CoverSourceEditor.parseLoose(prepared.cleaned):JSON.parse(prepared.cleaned);const rawTexts=Array.isArray(data?.texts)?data.texts:Array.isArray(data?.text)?data.text:null;if(!data || !rawTexts) throw new Error('缺少 texts 或 text 数组');
         const width=Number(data.canvas?.width), height=Number(data.canvas?.height); if(!(width>0&&height>0)) throw new Error('canvas.width 和 canvas.height 必须大于 0');
-        return {canvas:{width,height},texts:data.texts.map((t,i)=>({id:t.id||'text_'+i,content:String(t.content??t.text??''),x:Number(t.x)||0,y:Number(t.y)||0,font:t.font||t.font_family||t.fontFamily||'Noto Serif SC',size:Number(t.size??t.font_size??t.fontSize)||60,color:t.color||'#344022',weight:String((t.weight??t.font_weight??t.fontWeight)==='bold'?700:(t.weight??t.font_weight??t.fontWeight)==='medium'?500:(t.weight??t.font_weight??t.fontWeight)||400),letterSpacing:Number(t.letter_spacing??t.letterSpacing)||0,lineHeight:Number(t.line_height??t.lineHeight)||1.2,align:t.align||t.anchor||'left',visible:t.visible!==false})),cleaned:prepared.changed};
+        return {canvas:{width,height},texts:rawTexts.map((t,i)=>{const size=Number(t.size??t.font_size??t.fontSize)||60,align=t.align||t.anchor||'left',boxWidth=Number(t.width),boxModel=Number.isFinite(boxWidth)&&t.fontSize!=null;let x=Number(t.x)||0,y=Number(t.y)||0;if(boxModel){if(align==='center')x+=boxWidth/2;else if(align==='right')x+=boxWidth;y+=size;}return{id:t.id||'text_'+i,content:String(t.content??t.text??''),x,y,font:t.font||t.font_family||t.fontFamily||'Noto Serif SC',size,color:t.color||'#344022',weight:String((t.weight??t.font_weight??t.fontWeight)==='bold'?700:(t.weight??t.font_weight??t.fontWeight)==='medium'?500:(t.weight??t.font_weight??t.fontWeight)||400),letterSpacing:Number(t.letter_spacing??t.letterSpacing)||0,lineHeight:Number(t.line_height??t.lineHeight)||1.2,align,visible:t.visible!==false};}),cleaned:prepared.changed||!strict};
       }
       function validateSource(raw) { try { const data=parseLayout(raw); $('#sourceStatus').textContent=`${data.cleaned?tr('sourceCleaned'):tr('sourceValid')} · ${data.texts.length} ${tr('layers')} · ${data.canvas.width} × ${data.canvas.height}`; $('#sourceStatus').classList.remove('error'); $('#applySource').disabled=false; return data; } catch(error) { $('#sourceStatus').textContent=`${tr('cannotApply')}：${error.message}`; $('#sourceStatus').classList.add('error'); $('#applySource').disabled=true; return null; } }
       function ensureSourceEditor() { if(sourceEditor) return; if(!window.CoverSourceEditor){toast(tr('componentMissing'));return;} sourceEditor=window.CoverSourceEditor.create($('#sourceEditor'),{doc:layoutText(),onChange:value=>{sourceDirty=true;validateSource(value);}}); validateSource(sourceEditor.getValue()); }
@@ -289,7 +339,7 @@
           </fieldset>
           <fieldset class="group"><legend>${tr('type')}</legend>
             <label class="field">${tr('font')}<input data-key="font" value="${esc(t.font)}" list="fontList"><datalist id="fontList"><option>Noto Serif SC</option><option>Songti SC</option><option>STSong</option><option>PingFang SC</option><option>Heiti SC</option><option>Arial</option><option>Georgia</option><option>Cormorant Garamond</option></datalist></label>
-            <div class="grid-2"><label class="field">${tr('size')}<div class="size-stepper"><button type="button" data-size-step="-2" aria-label="${tr('size')} -2">−</button><input data-key="size" type="number" min="6" max="500" value="${t.size}"><button type="button" data-size-step="2" aria-label="${tr('size')} +2">＋</button></div></label><label class="field">${tr('weight')}<select data-key="weight"><option value="400" ${t.weight==='400'?'selected':''}>${tr('regular')}</option><option value="500" ${t.weight==='500'?'selected':''}>${tr('medium')}</option><option value="700" ${t.weight==='700'?'selected':''}>${tr('bold')}</option><option value="900" ${t.weight==='900'?'selected':''}>${tr('black')}</option></select></label></div>
+            <div class="grid-2"><label class="field">${tr('size')}<div class="size-stepper"><button type="button" data-size-step="-2" aria-label="${tr('size')} -2">−</button><input data-key="size" type="number" min="6" max="500" value="${t.size}"><button type="button" data-size-step="2" aria-label="${tr('size')} +2">＋</button></div></label><label class="field">${tr('weight')}<select data-key="weight"><option value="400" ${t.weight==='400'?'selected':''}>${tr('regular')}</option><option value="500" ${t.weight==='500'?'selected':''}>${tr('medium')}</option><option value="600" ${t.weight==='600'?'selected':''}>600</option><option value="650" ${t.weight==='650'?'selected':''}>650</option><option value="700" ${t.weight==='700'?'selected':''}>${tr('bold')}</option><option value="900" ${t.weight==='900'?'selected':''}>${tr('black')}</option></select></label></div>
             <div class="grid-2"><label class="field">${tr('spacing')}<input data-key="letterSpacing" type="number" min="-20" max="100" value="${t.letterSpacing||0}"></label><label class="field">${tr('lineHeight')}<input data-key="lineHeight" type="number" min="0.7" max="3" step="0.05" value="${t.lineHeight||1.2}"></label></div>
             <label class="field">${tr('color')}<div class="color-row"><input data-key="color" type="color" value="${esc(t.color)}"><input data-key="color" value="${esc(t.color)}"></div></label>
             <div class="align-row"><button data-align="left" class="${t.align==='left'?'active':''}">${tr('left')}</button><button data-align="center" class="${t.align==='center'?'active':''}">${tr('center')}</button><button data-align="right" class="${t.align==='right'?'active':''}">${tr('right')}</button></div>
@@ -307,30 +357,38 @@
 
       $('#addText').addEventListener('click',()=>{ const id='text_'+Date.now();state.texts.push({id,content:tr('newText'),x:state.canvas.width/2,y:state.canvas.height/2,font:'Noto Serif SC',size:90,color:'#344022',weight:'700',letterSpacing:4,lineHeight:1.2,align:'center',visible:true});selectedId=id;setSideTab('properties');pushHistory();refresh(); });
       $('#langToggle').addEventListener('click',()=>{currentLang=currentLang==='zh'?'en':'zh';applyLanguage();});
+      $('#settingsButton').addEventListener('click',()=>setSettingsOpen($('#settingsMenu').hidden));
+      $('#settingsMenu').addEventListener('change',e=>{if(e.target.name!=='saveMode')return;saveMode=e.target.value;localStorage.setItem('posterSaveMode',saveMode);updateSaveSettings();});
+      $('#chooseSaveFolder').addEventListener('click',chooseDirectoryForMode);
+      document.addEventListener('pointerdown',e=>{if(!$('#settingsMenu').hidden&&!e.target.closest('#settingsMenu')&&!e.target.closest('#settingsButton'))setSettingsOpen(false);});
       $('#propertiesTab').addEventListener('click',()=>setSideTab('properties')); $('#sourceTab').addEventListener('click',()=>setSideTab('source'));
       $('#applySource').addEventListener('click',applySource);
       $('#formatSource').addEventListener('click',()=>{const data=validateSource(sourceEditor.getValue());if(!data)return;sourceEditor.setValue(JSON.stringify({canvas:data.canvas,texts:data.texts.map(({id,content,x,y,font,size,color,weight,letterSpacing,lineHeight,align,visible})=>({id,content,x,y,font,size,color,weight,letter_spacing:letterSpacing,line_height:lineHeight,align,visible}))},null,2));sourceDirty=true;validateSource(sourceEditor.getValue());toast(tr('formatted'));});
       $('#undo').addEventListener('click',undo); $('#redo').addEventListener('click',redo);
       $('#zoom').addEventListener('input',e=>{zoom=Number(e.target.value)/100;$('#zoomValue').textContent=e.target.value+'%';fitCanvas();});
 
-      $('#backgroundInput').addEventListener('change', async e=>{ const file=e.target.files[0];if(!file)return;backgroundBaseName=file.name.replace(/\.[^.]+$/,'')||'cover'; const data=await readFile(file,'data'); const img=new Image();img.onload=async()=>{state.backgroundData=data;state.canvas={width:img.naturalWidth,height:img.naturalHeight};await loadBackground(data);pushHistory();refresh();toast(`${tr('backgroundChanged')} ${img.naturalWidth} × ${img.naturalHeight}`);};img.src=data;e.target.value=''; });
+      async function replaceBackground(file){if(!file?.type?.startsWith('image/'))return;backgroundBaseName=file.name.replace(/\.[^.]+$/,'')||'cover';imageDirectoryHandle=null;updateSaveSettings();const data=await readFile(file,'data');const img=new Image();img.onload=async()=>{state.backgroundData=data;state.canvas={width:img.naturalWidth,height:img.naturalHeight};await loadBackground(data);pushHistory();refresh();toast(`${tr('backgroundChanged')} ${img.naturalWidth} × ${img.naturalHeight}`);};img.src=data;}
+      $('#backgroundInput').addEventListener('change', async e=>{await replaceBackground(e.target.files[0]);e.target.value='';});
+      stage.addEventListener('dragenter',e=>{if([...e.dataTransfer.types].includes('Files')){e.preventDefault();stage.classList.add('drag-over');}});
+      stage.addEventListener('dragover',e=>{if([...e.dataTransfer.types].includes('Files')){e.preventDefault();e.dataTransfer.dropEffect='copy';}});
+      stage.addEventListener('dragleave',e=>{if(!stage.contains(e.relatedTarget))stage.classList.remove('drag-over');});
+      stage.addEventListener('drop',async e=>{e.preventDefault();stage.classList.remove('drag-over');const file=[...e.dataTransfer.files].find(item=>item.type.startsWith('image/'));if(file)await replaceBackground(file);});
       $('#layoutInput').addEventListener('change', async e=>{ const file=e.target.files[0];if(!file)return; try{const data=parseLayout(await readFile(file,'text'));state.canvas=data.canvas;state.texts=data.texts;selectedId=null;sourceDirty=false;pushHistory();refresh();toast(tr('layoutImported'));}catch(error){toast(`${tr('cannotRead')}：${error.message}`);}e.target.value=''; });
       $('#fontInput').addEventListener('change', async e=>{const file=e.target.files[0];if(!file)return;try{const family=file.name.replace(/\.[^.]+$/,'').replace(/[^\w\u4e00-\u9fff-]/g,' ');const face=new FontFace(family,await file.arrayBuffer());await face.load();document.fonts.add(face);if(selected()){selected().font=family;pushHistory();refresh();}toast(`${tr('fontLoaded')}：${family}`);}catch{toast(tr('fontFailed'));}e.target.value='';});
-      $('#chooseOutputDir').addEventListener('click',async()=>{if(!window.showDirectoryPicker){toast(tr('folderUnsupported'));return;}try{outputDirectoryHandle=await window.showDirectoryPicker({mode:'readwrite'});$('#chooseOutputDir').textContent=outputDirectoryHandle.name;toast(`${tr('outputTo')}：${outputDirectoryHandle.name}`);}catch(error){if(error.name!=='AbortError')toast(tr('folderFailed'));}});
       $('#saveLayout').addEventListener('click',async()=>{const name=backgroundBaseName==='cover'?'layout.json':`${backgroundBaseName}-layout.json`;const ok=await saveBlob(new Blob([layoutText()],{type:'application/json'}),name,'application/json');if(ok)toast(`${tr('saved')} ${name}`);});
       $('#exportPng').addEventListener('click',async()=>{render(false);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));render(true);const name=backgroundBaseName==='cover'?'cover.png':`${backgroundBaseName}-cover.png`;const ok=await saveBlob(blob,name,'image/png');if(ok)toast(`${tr('exported')} ${name} · ${state.canvas.width} × ${state.canvas.height}`);});
 
       function readFile(file,type){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;type==='data'?r.readAsDataURL(file):r.readAsText(file);});}
       function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
-      async function saveBlob(blob,name,type){try{if(outputDirectoryHandle){const handle=await outputDirectoryHandle.getFileHandle(name,{create:true});const writable=await handle.createWritable();await writable.write(blob);await writable.close();return true;}if(window.showSaveFilePicker){const handle=await window.showSaveFilePicker({suggestedName:name,types:[{description:type==='image/png'?tr('pngImage'):tr('jsonLayout'),accept:{[type]:[type==='image/png'?'.png':'.json']}}]});const writable=await handle.createWritable();await writable.write(blob);await writable.close();return true;}download(blob,name);return true;}catch(error){if(error.name!=='AbortError')toast(`${tr('saveFailed')}：${error.message}`);return false;}}
+      async function saveBlob(blob,name){try{if(saveMode==='default'){download(blob,name);return true;}const directory=await writableDirectory();if(!directory)return false;const handle=await directory.getFileHandle(name,{create:true});const writable=await handle.createWritable();await writable.write(blob);await writable.close();return true;}catch(error){if(error.name!=='AbortError')toast(`${tr('saveFailed')}：${error.message}`);return false;}}
       function point(e){const rect=canvas.getBoundingClientRect();return{x:(e.clientX-rect.left)*state.canvas.width/rect.width,y:(e.clientY-rect.top)*state.canvas.height/rect.height};}
       shell.addEventListener('pointerdown',e=>{const p=point(e);const hit=[...state.texts].reverse().find(t=>t.visible!==false&&(()=>{const b=bounds(t);return p.x>=b.x-20&&p.x<=b.x+b.w+20&&p.y>=b.y-20&&p.y<=b.y+b.h+20;})());if(hit){selectedId=hit.id;setSideTab('properties');dragging={pointer:e.pointerId,dx:p.x-hit.x,dy:p.y-hit.y,start:snapshot()};shell.setPointerCapture(e.pointerId);refresh();}else{selectedId=null;dragging=null;refresh();}});
       shell.addEventListener('pointermove',e=>{if(!dragging||dragging.pointer!==e.pointerId)return;const p=point(e),t=selected();t.x=p.x-dragging.dx;t.y=p.y-dragging.dy;render();});
       shell.addEventListener('pointerup',e=>{if(dragging?.pointer===e.pointerId){dragging=null;pushHistory();renderProperties();renderLayers();}});
-      window.addEventListener('keydown',e=>{const tag=document.activeElement?.tagName;if(['INPUT','TEXTAREA','SELECT'].includes(tag)||document.activeElement?.closest('.cm-editor'))return;if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}if(e.key==='Escape'&&selected()){selectedId=null;refresh();return;}const moves={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(moves[e.key]&&selected()){e.preventDefault();const n=e.shiftKey?10:1;selected().x+=moves[e.key][0]*n;selected().y+=moves[e.key][1]*n;pushHistory();refresh();}if((e.key==='Delete'||e.key==='Backspace')&&selected()){state.texts=state.texts.filter(t=>t.id!==selectedId);selectedId=null;pushHistory();refresh();}});
+      window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#settingsMenu').hidden){setSettingsOpen(false);return;}const tag=document.activeElement?.tagName;if(['INPUT','TEXTAREA','SELECT'].includes(tag)||document.activeElement?.closest('.cm-editor'))return;if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}if(e.key==='Escape'&&selected()){selectedId=null;refresh();return;}const moves={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(moves[e.key]&&selected()){e.preventDefault();const n=e.shiftKey?10:1;selected().x+=moves[e.key][0]*n;selected().y+=moves[e.key][1]*n;pushHistory();refresh();}if((e.key==='Delete'||e.key==='Backspace')&&selected()){state.texts=state.texts.filter(t=>t.id!==selectedId);selectedId=null;pushHistory();refresh();}});
       window.addEventListener('resize',fitCanvas);
 
-      state.backgroundData=createParchment();loadBackground(state.backgroundData).then(()=>{pushHistory();applyLanguage();refresh();});
+      state.backgroundData=createParchment();restoreDirectories();loadBackground(state.backgroundData).then(()=>{pushHistory();applyLanguage();refresh();});
       if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
     })();
   </script>

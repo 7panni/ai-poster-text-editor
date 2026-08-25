@@ -1,0 +1,89 @@
+const layout = { canvas: { width: 1648, height: 928 },
+
+text: [
+{
+id: "nidana",
+text: "Nidāna",
+x: 1080, y: 105,
+width: 220,
+fontSize: 46,
+fontFamily: "Noto Serif",
+fontWeight: 400,
+color: "#6E654F",
+align: "center",
+letterSpacing: 1
+},
+```less
+{
+  id: "prefix",
+  text: "写给",
+  x: 805, y: 238,
+  width: 135,
+  fontSize: 50,
+  fontFamily: "Noto Serif SC",
+  fontWeight: 500,
+  color: "#6D695E",
+  align: "center"
+},
+{
+  id: "ai",
+  text: "AI工程师",
+  x: 935, y: 198,
+  width: 470,
+  fontSize: 76,
+  fontFamily: "Noto Serif SC",
+  fontWeight: 600,
+  color: "#2F5065",
+  align: "center",
+  letterSpacing: 1
+},
+{
+  id: "suffix",
+  text: "的",
+  x: 1400, y: 246,
+  width: 70,
+  fontSize: 48,
+  fontFamily: "Noto Serif SC",
+  fontWeight: 500,
+  color: "#6D695E",
+  align: "center"
+},
+{
+  id: "main",
+  text: "早期佛教",
+  x: 755, y: 338,
+  width: 760,
+  fontSize: 128,
+  fontFamily: "Noto Serif SC",
+  fontWeight: 700,
+  color: "#314D39",
+  align: "center",
+  letterSpacing: 8
+},
+{
+  id: "subtitle",
+  text: "导论",
+  x: 980, y: 535,
+  width: 300,
+  fontSize: 92,
+  fontFamily: "Noto Serif SC",
+  fontWeight: 650,
+  color: "#314D39",
+  align: "center",
+  letterSpacing: 10
+},
+{
+  id: "episode",
+  text: "前言",
+  x: 1035, y: 690,
+  width: 190,
+  fontSize: 58,
+  fontFamily: "Noto Serif SC",
+  fontWeight: 500,
+  color: "#765F36",
+  align: "center",
+  letterSpacing: 8
+}
+```
+]
+};

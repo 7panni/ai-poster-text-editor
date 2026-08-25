@@ -17,6 +17,9 @@ importers:
       codemirror:
         specifier: ^6.0.2
         version: 6.0.2
+      json5:
+        specifier: ^2.2.3
+        version: 2.2.3
     devDependencies:
       esbuild:
         specifier: ^0.25.9
@@ -238,6 +241,11 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  json5@2.2.3:
+    resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
+    engines: {node: '>=6'}
+    hasBin: true
+
   playwright-core@1.62.1:
     resolution: {integrity: sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==}
     engines: {node: '>=20'}
@@ -446,6 +454,8 @@ snapshots:
 
   fsevents@2.3.2:
     optional: true
+
+  json5@2.2.3: {}
 
   playwright-core@1.62.1: {}
 

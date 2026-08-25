@@ -1,7 +1,7 @@
 {
   "name": "ai-poster-text-editor",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A local-first bilingual editor for quickly adjusting text on AI-generated posters and covers",
   "license": "MIT",
   "scripts": {
@@ -11,7 +11,8 @@
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lint": "^6.8.2",
-    "codemirror": "^6.0.2"
+    "codemirror": "^6.0.2",
+    "json5": "^2.2.3"
   },
   "devDependencies": {
     "esbuild": "^0.25.9",

@@ -2,55 +2,31 @@
 
 [在线使用 / Live app](https://7panni.github.io/ai-poster-text-editor/)
 
-一个本地优先、无需后端的双语编辑器，用来快速修改 AI 生成的海报或封面文字。背景图与文字图层分离：换标题、字号、颜色和位置时，不必重新生成整张图。
+很多人用 AI 生成海报或封面后，会发现图片里的文字有错字、乱码或排版问题。即使文字没有错，只想改一个词、调整字号、颜色或位置，也常常要反复生成半天，背景和构图还可能跟着变化。
 
-A local-first bilingual editor for quickly adjusting text on AI-generated posters and covers. It keeps the background image separate from editable text layers, so wording, size, color, and position can change without regenerating the artwork.
+AI 海报文字快改把背景图和文字排版分开：让 AI 生成一张无文字背景图，再提供 `layout.json`。把两者导入后，直接点击画布文字修改，最后导出原尺寸 PNG。整个过程在本地浏览器完成，图片和字体不会上传。
+
+AI-generated posters often contain misspelled, garbled, or poorly positioned text. Even when the wording is correct, changing one phrase, font size, color, or position can require many slow regenerations—and may unexpectedly alter the artwork. AI Poster Text Editor separates the text-free background from a `layout.json`, so you can click and adjust text locally, then export a full-resolution PNG without regenerating the image.
 
 ![AI海报文字快改界面](docs/screenshot-zh.png)
 
-## 功能 / Features
-
-- 直接点击、拖动画布文字；点击空白或按 `Esc` 取消选择。
-- 大号字号减/加按钮、精确数值、颜色、字距、行高、对齐和坐标。
-- 右侧直接粘贴或编辑 `layout.json`，支持 GPT 常见字段与 Markdown 围栏清理。
-- 加载本地字体；导出原尺寸 PNG；保存并重新导入排版。
-- 中文/English 一键切换，默认中文。
-- 图片和字体仅在本地浏览器处理，不上传。
-
-- Click and drag text directly on the canvas; click empty space or press `Esc` to clear selection.
-- Large font-size decrement/increment buttons plus precise size, color, spacing, line height, alignment, and coordinates.
-- Paste or edit `layout.json` beside the canvas; common GPT aliases and Markdown fences are accepted.
-- Load local fonts, export full-resolution PNG, and save/reopen layouts.
-- Chinese/English interface switch; Chinese is the default.
-- Images and fonts stay in the local browser and are never uploaded.
-
 ## 使用 / Use
 
-1. 下载仓库后直接打开 `index.html`。
-2. 点“换背景”选择无文字背景图。
-3. 导入 `layout.json`，或在右侧源码栏粘贴 AI 输出。
-4. 点击画布文字并调整，最后保存排版或导出 PNG。
+点“替换背景”选择无文字背景图，也可以把图片直接拖到画布上；再点“导入排版”，或在右侧 `layout.json` 页粘贴 AI 给出的代码。点击或拖动画布中的文字，在右侧改内容、字体、字号、颜色和位置；点击空白处或按 `Esc` 可取消选择。完成后保存排版，或导出 PNG。
 
-1. Download the repository and open `index.html`.
-2. Choose a text-free background image.
-3. Import `layout.json`, or paste AI output into the source panel.
-4. Click text on the canvas, adjust it, then save the layout or export PNG.
+Choose a text-free image with “Replace background,” or drag an image directly onto the canvas. Import a layout or paste AI-generated code into the `layout.json` panel, adjust the text, then save the editable layout or export a PNG.
 
-## 安装方式 / Installation
+“设置”里的保存位置有三种：浏览器默认下载位置、上次使用的文件夹、背景图片所在文件夹。受浏览器隐私限制，网页无法自动读取上传图片的真实路径，因此第一次选择“图片同文件夹”时需要确认一次该文件夹。Chrome 和 Edge 支持固定文件夹；不支持此能力的浏览器会回退到默认下载位置。
 
-### 1. 安装包 / Release package
+The Settings menu offers the browser download folder, the last-used folder, or the background image folder. Browsers do not reveal an uploaded file's real path, so “With background image” requires one folder confirmation. Chrome and Edge support direct folder writing; other browsers fall back to normal downloads.
 
-从 [GitHub Releases](https://github.com/7panni/ai-poster-text-editor/releases) 下载最新 ZIP，解压后双击 `index.html`。ZIP 同时支持 Windows、macOS 和 Linux，不需要安装运行库。
+## 使用与安装 / Use and installation
 
-Download the latest ZIP from [GitHub Releases](https://github.com/7panni/ai-poster-text-editor/releases), extract it, and open `index.html`. The same package works on Windows, macOS, and Linux with no runtime installation.
+最省事的方式是打开[在线版](https://7panni.github.io/ai-poster-text-editor/)。也可以从 [GitHub Releases](https://github.com/7panni/ai-poster-text-editor/releases) 下载 ZIP，解压后打开 `index.html`。Chrome 或 Edge 可把在线版安装为独立窗口的 PWA；Android 和 iPhone/iPad 也可“添加到主屏幕”。编辑功能可在 Windows、macOS、Linux 和手机浏览器运行，精细排版更适合桌面端。
 
-### 2. 安装为网页应用 / Install as a web app
+Use the [live app](https://7panni.github.io/ai-poster-text-editor/), or download the ZIP from [GitHub Releases](https://github.com/7panni/ai-poster-text-editor/releases), extract it, and open `index.html`. Chrome and Edge can install the live version as a PWA; mobile browsers can add it to the home screen. Editing works on Windows, macOS, Linux, and phones, while precise layout is easier on desktop.
 
-打开[在线版](https://7panni.github.io/ai-poster-text-editor/)，在 Chrome 或 Edge 地址栏选择“安装应用”；Android 可选择“添加到主屏幕”，iPhone/iPad Safari 可通过分享菜单选择“添加到主屏幕”。安装后可以独立窗口运行，并缓存基础程序供离线使用。
-
-Open the [live app](https://7panni.github.io/ai-poster-text-editor/). In Chrome or Edge, choose “Install app” from the address bar. On Android, use “Add to Home screen”; on iPhone or iPad Safari, use Share → “Add to Home Screen.” The installed PWA runs in its own window and caches the core app for offline use.
-
-### 3. 命令行安装 / Command-line installation
+命令行安装 / Command-line installation:
 
 ```bash
 git clone https://github.com/7panni/ai-poster-text-editor.git
@@ -75,7 +51,7 @@ Linux：
 xdg-open index.html
 ```
 
-### 4. 让 AI 安装 / Ask an AI coding agent to install it
+让 AI 安装 / Ask an AI coding agent to install it:
 
 中文提示词：
 
@@ -89,21 +65,11 @@ English prompt:
 Install the open-source project https://github.com/7panni/ai-poster-text-editor on my computer. Confirm the destination folder before cloning the repository. Do not modify the source or install unnecessary global dependencies. Open index.html and verify that the default Chinese interface, image canvas, and layout.json editor all render correctly. Report the exact installation path and launch method. If I only need to use the finished app, do not run pnpm install; install Node.js dependencies and run pnpm install, pnpm run build, and pnpm test only when I want a development environment.
 ```
 
-### 原生安装包状态 / Native installer status
+### 原生安装包开发暂停 / Native installers paused
 
-当前提供跨平台 ZIP 和可安装 PWA；尚未提供 Windows `.exe`、macOS `.dmg` 或 Linux `.AppImage`。这些原生安装包需要后续增加 Tauri 桌面壳和三平台签名构建，不能由当前 HTML 文件直接冒充。
+项目可以继续用 Tauri 封装 Windows `.exe`、macOS `.dmg` 和 Linux `.AppImage`，但这项开发目前暂停，现阶段只提供 ZIP 和 PWA。欢迎有空、有兴趣的开发者接手并提交 Pull Request。
 
-The project currently provides a cross-platform ZIP and an installable PWA. Native Windows `.exe`, macOS `.dmg`, and Linux `.AppImage` packages are not yet available; they require a future Tauri desktop shell plus platform-specific signed builds.
-
-## 平台兼容 / Platform support
-
-| 平台 / Platform | 状态 / Status | 说明 / Notes |
-|---|---|---|
-| Windows | 完整 / Full | 推荐 Chrome 或 Edge / Chrome or Edge recommended |
-| macOS | 完整 / Full | Chrome、Edge 保存体验最好；Safari 使用下载回退 / Chrome and Edge provide the best save flow; Safari falls back to downloads |
-| Linux | 完整 / Full | 推荐 Chromium、Chrome 或 Firefox / Chromium, Chrome, or Firefox recommended |
-| Android | 基础可用 / Basic | 触控和下载可用，精确排版不如桌面 / Touch and download work; desktop is better for precise layout |
-| iPhone/iPad | 基础可用 / Basic | Safari 文件夹写入受限，使用普通下载 / Safari cannot write to a chosen folder; standard downloads are used |
+The app can be wrapped with Tauri to produce Windows `.exe`, macOS `.dmg`, and Linux `.AppImage` installers, but that work is currently paused. The project presently ships as a ZIP and PWA. Contributors are welcome to pick up the native packaging work and submit a pull request.
 
 ## 给 AI 的中文提示词
 
@@ -199,7 +165,7 @@ Runtime files are `index.html`, `vendor/source-editor.js`, and the sample `layou
 
 ## 作者 / Credits
 
-- 开发者 / Developer: 尚宸鸣 / Chenming Shang
+- 开发者 / Developer: 尚宸鸣 / Vijjādassī Shang
 - 使用 Codex 协助开发 / Developed with Codex assistance
 - 项目 / Project: [github.com/7panni/ai-poster-text-editor](https://github.com/7panni/ai-poster-text-editor)
 - 作者博客 / Author blog: [7panni.com](https://7panni.com)
