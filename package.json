@@ -1,0 +1,20 @@
+{
+  "name": "ai-poster-text-editor",
+  "private": true,
+  "version": "0.2.0",
+  "description": "A local-first bilingual editor for quickly adjusting text on AI-generated posters and covers",
+  "license": "MIT",
+  "scripts": {
+    "build": "esbuild src/source-editor.js --bundle --format=iife --outfile=vendor/source-editor.js --minify",
+    "test": "node test/visual-test.js"
+  },
+  "dependencies": {
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/lint": "^6.8.2",
+    "codemirror": "^6.0.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.9",
+    "playwright": "^1.56.1"
+  }
+}

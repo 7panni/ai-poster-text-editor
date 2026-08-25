@@ -1,0 +1,102 @@
+{ "canvas": { "width": 1672, "height": 941 },
+"texts": [
+{
+"id": "nidana",
+"text": "Nidāna",
+"font\_family": "Cormorant Garamond",
+"font\_weight": 500,
+"font\_size": 44,
+"color": "#8B6C32",
+"x": 1153,
+"y": 131,
+"anchor": "center",
+"letter\_spacing": 1
+},
+```json
+{
+  "id": "write_to",
+  "text": "写给",
+  "font_family": "Source Han Serif SC",
+  "font_weight": 600,
+  "font_size": 50,
+  "color": "#394326",
+  "x": 877,
+  "y": 276,
+  "anchor": "center",
+  "letter_spacing": 4
+},
+{
+  "id": "ai",
+  "text": "AI",
+  "font_family": "Source Han Serif SC",
+  "font_weight": 500,
+  "font_size": 84,
+  "color": "#354022",
+  "x": 1006,
+  "y": 266,
+  "anchor": "center",
+  "letter_spacing": 0
+},
+{
+  "id": "engineer",
+  "text": "工程师",
+  "font_family": "Source Han Serif SC",
+  "font_weight": 600,
+  "font_size": 82,
+  "color": "#354022",
+  "x": 1234,
+  "y": 267,
+  "anchor": "center",
+  "letter_spacing": 5
+},
+{
+  "id": "of",
+  "text": "的",
+  "font_family": "Source Han Serif SC",
+  "font_weight": 600,
+  "font_size": 48,
+  "color": "#394326",
+  "x": 1450,
+  "y": 278,
+  "anchor": "center",
+  "letter_spacing": 0
+},
+{
+  "id": "title_main",
+  "text": "早期佛教",
+  "font_family": "Source Han Serif SC",
+  "font_weight": 700,
+  "font_size": 158,
+  "color": "#333D20",
+  "x": 1145,
+  "y": 440,
+  "anchor": "center",
+  "letter_spacing": 14
+},
+{
+  "id": "title_sub",
+  "text": "导论",
+  "font_family": "Source Han Serif SC",
+  "font_weight": 700,
+  "font_size": 118,
+  "color": "#333D20",
+  "x": 1144,
+  "y": 625,
+  "anchor": "center",
+  "letter_spacing": 18
+},
+{
+  "id": "chapter",
+  "text": "前言",
+  "font_family": "Source Han Serif SC",
+  "font_weight": 600,
+  "font_size": 52,
+  "color": "#79551D",
+  "x": 1144,
+  "y": 747,
+  "anchor": "center",
+  "letter_spacing": 8
+}
+```
+]
+}

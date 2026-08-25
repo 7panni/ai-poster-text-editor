@@ -1,0 +1,78 @@
+{
+  "canvas": {
+    "width": 1600,
+    "height": 900
+  },
+  "texts": [
+    {
+      "id": "series",
+      "content": "Nidāna",
+      "x": 1120,
+      "y": 130,
+      "font": "Cormorant Garamond",
+      "size": 42,
+      "color": "#806b3f",
+      "weight": "400",
+      "letter_spacing": 2,
+      "line_height": 1.2,
+      "align": "center",
+      "visible": true
+    },
+    {
+      "id": "subtitle",
+      "content": "写给 AI 工程师的",
+      "x": 1120,
+      "y": 260,
+      "font": "Noto Serif SC",
+      "size": 62,
+      "color": "#354126",
+      "weight": "500",
+      "letter_spacing": 8,
+      "line_height": 1.2,
+      "align": "center",
+      "visible": true
+    },
+    {
+      "id": "title_main",
+      "content": "早期佛教",
+      "x": 1120,
+      "y": 390,
+      "font": "Noto Serif SC",
+      "size": 150,
+      "color": "#344022",
+      "weight": "700",
+      "letter_spacing": 10,
+      "line_height": 1.15,
+      "align": "center",
+      "visible": true
+    },
+    {
+      "id": "title_sub",
+      "content": "导论",
+      "x": 1120,
+      "y": 560,
+      "font": "Noto Serif SC",
+      "size": 120,
+      "color": "#344022",
+      "weight": "700",
+      "letter_spacing": 20,
+      "line_height": 1.15,
+      "align": "center",
+      "visible": true
+    },
+    {
+      "id": "chapter",
+      "content": "前言",
+      "x": 1120,
+      "y": 700,
+      "font": "Noto Serif SC",
+      "size": 52,
+      "color": "#806b3f",
+      "weight": "400",
+      "letter_spacing": 4,
+      "line_height": 1.2,
+      "align": "center",
+      "visible": true
+    }
+  ]
+}

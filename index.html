@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI海报文字快改</title>
+  <meta name="theme-color" content="#101a16">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <style>
+    :root {
+      --ink: #14201b;
+      --ink-2: #1c2b24;
+      --ink-3: #293a31;
+      --paper: #e9dfc3;
+      --paper-2: #c8b98d;
+      --gold: #c8a968;
+      --gold-hi: #efd18a;
+      --fog: #aab5ad;
+      --line: rgba(233, 223, 195, .14);
+      --danger: #d78770;
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--ink); color: #edf0ec; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; overflow: hidden; }
+    button, input, select, textarea { font: inherit; }
+    button, .file-button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .file-button:focus-within {
+      outline: 2px solid var(--gold-hi); outline-offset: 2px;
+    }
+
+    .app { height: 100vh; display: grid; grid-template-rows: 56px minmax(0, 1fr); }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      padding: 0 18px; border-bottom: 1px solid var(--line); background: #101a16;
+    }
+    .brand { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+    .brand b { font-size: 16px; letter-spacing: .06em; color: var(--gold-hi); }
+    .brand span { color: var(--fog); font-size: 11px; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    button, .file-button {
+      border: 1px solid var(--line); background: var(--ink-2); border-radius: 7px; padding: 8px 11px;
+      cursor: pointer; transition: border-color .15s, background .15s, transform .15s;
+    }
+    button:hover, .file-button:hover { border-color: rgba(239,209,138,.55); background: var(--ink-3); }
+    button:active, .file-button:active { transform: translateY(1px); }
+    button.primary { background: var(--gold); color: #152019; border-color: var(--gold); font-weight: 700; }
+    button.primary:hover { background: var(--gold-hi); }
+    button.icon { min-width: 34px; padding: 8px; }
+    button:disabled { opacity: .38; cursor: default; transform: none; }
+    .file-button { display: inline-flex; align-items: center; }
+    .file-button input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+    .workspace { min-height: 0; display: grid; grid-template-columns: 92px minmax(320px, 1fr) 380px; }
+    .panel { min-height: 0; background: #15211c; }
+    .tools-panel { border-right: 1px solid var(--line); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px 8px; gap: 8px; }
+    .tools-panel button, .tools-panel .file-button { min-height: 58px; width: 100%; padding: 8px 5px; justify-content: center; text-align: center; line-height: 1.3; font-size: 12px; }
+    .properties-panel { border-left: 1px solid var(--line); display: grid; grid-template-rows: 48px minmax(0,1fr); overflow: hidden; }
+    .panel-head { height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; border-bottom: 1px solid var(--line); }
+    .panel-head h2 { margin: 0; font-size: 12px; letter-spacing: .12em; color: var(--fog); font-weight: 650; }
+    .side-tabs { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: #0c1511; }
+    .side-tabs button { border: 0; padding: 5px 9px; background: transparent; color: var(--fog); font-size: 12px; }
+    .side-tabs button.active { background: var(--ink-3); color: var(--gold-hi); box-shadow: inset 0 0 0 1px rgba(200,169,104,.28); }
+
+    .stage-wrap { min-width: 0; min-height: 0; background: #0d1512; }
+    .visual-mode { height: 100%; min-height: 0; display: grid; grid-template-rows: minmax(0,1fr) 42px; }
+    .stage {
+      min-width: 0; min-height: 0; overflow: hidden; position: relative; display: grid; place-items: center;
+      background-color: #111a16;
+      background-image: radial-gradient(circle at 1px 1px, rgba(233,223,195,.09) 1px, transparent 0);
+      background-size: 18px 18px;
+    }
+    .canvas-shell { position: relative; box-shadow: 0 20px 65px rgba(0,0,0,.45); touch-action: none; user-select: none; }
+    canvas { width: 100%; height: 100%; display: block; background: #ddcfaa; }
+    .stage-tools { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; border-top: 1px solid var(--line); background: #101a16; color: var(--fog); font-size: 12px; }
+    .zoom-tools { grid-column: 2; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .credits { grid-column: 1; grid-row: 1; min-width: 0; padding-left: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; color: #829188; }
+    .credits a { color: var(--paper-2); text-decoration: none; }
+    .credits a:hover { color: var(--gold-hi); text-decoration: underline; }
+    .stage-tools input[type=range] { width: 130px; accent-color: var(--gold); }
+    #zoomValue { min-width: 38px; color: #edf0ec; }
+    .side-pane { min-height: 0; overflow: auto; }
+    .side-pane[hidden] { display: none; }
+    .source-mode { height: 100%; min-height: 0; display: grid; grid-template-rows: minmax(0,1fr) 88px; background: #0d1512; }
+    .source-editor { min-height: 0; overflow: hidden; }
+    .source-actions { display: grid; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line); background: #101a16; }
+    .source-status { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fog); font-size: 12px; }
+    .source-status.error { color: #f0b09e; }
+    .source-buttons { display: flex; gap: 8px; flex: none; }
+
+    .property-body { padding: 14px; }
+    .empty-state { color: var(--fog); font-size: 13px; line-height: 1.7; padding: 18px 8px; }
+    .group { border: 0; padding: 0; margin: 0 0 18px; }
+    .group legend { width: 100%; padding: 0 0 8px; margin-bottom: 10px; color: var(--gold); font-size: 11px; letter-spacing: .13em; border-bottom: 1px solid var(--line); }
+    label.field { display: grid; gap: 6px; margin-bottom: 11px; color: var(--fog); font-size: 11px; }
+    .field input, .field select, .field textarea {
+      width: 100%; color: #eef0ec; border: 1px solid var(--line); background: #101a16; border-radius: 6px; padding: 8px 9px;
+    }
+    .field textarea { min-height: 70px; resize: vertical; line-height: 1.45; }
+    .size-stepper { display: grid; grid-template-columns: 44px minmax(58px,1fr) 44px; gap: 6px; }
+    .size-stepper button { min-height: 42px; padding: 0; font-size: 24px; line-height: 1; color: var(--gold-hi); border-color: rgba(200,169,104,.38); }
+    .size-stepper input { min-width: 0; text-align: center; font-size: 17px; font-weight: 700; color: var(--gold-hi); appearance: textfield; }
+    .size-stepper input::-webkit-inner-spin-button, .size-stepper input::-webkit-outer-spin-button { appearance: none; margin: 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+    .color-row { display: grid; grid-template-columns: 40px 1fr; gap: 8px; }
+    .color-row input[type=color] { padding: 3px; height: 36px; }
+    .align-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+    .align-row button.active { border-color: var(--gold); color: var(--gold-hi); background: rgba(200,169,104,.12); }
+    .danger { color: #f0b09e; border-color: rgba(215,135,112,.35); width: 100%; }
+    .hint { color: #829188; font-size: 11px; line-height: 1.55; margin: 9px 0 0; }
+    .toast { position: fixed; left: 50%; bottom: 58px; z-index: 20; transform: translate(-50%, 12px); opacity: 0; pointer-events: none; padding: 9px 13px; border-radius: 7px; background: #e5d7ad; color: #18231d; box-shadow: 0 8px 24px rgba(0,0,0,.32); transition: .2s; font-size: 13px; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .app { min-height: 100vh; height: auto; }
+      .workspace { grid-template-columns: 1fr; grid-template-rows: auto min(62vh, 620px) auto; }
+      .tools-panel { border-right: 0; border-bottom: 1px solid var(--line); flex-direction: row; padding: 8px; }
+      .tools-panel button, .tools-panel .file-button { min-height: 42px; }
+      .properties-panel { border-left: 0; border-top: 1px solid var(--line); min-height: 520px; }
+      .topbar { height: auto; min-height: 56px; padding: 9px 12px; align-items: flex-start; }
+      .top-actions { flex-wrap: wrap; justify-content: flex-end; }
+      .brand span { display: none; }
+      .credits { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><b data-i18n="appName">AI海报文字快改</b><span data-i18n="offline">本地离线</span></div>
+      <div class="top-actions">
+        <button id="langToggle" title="Switch to English">EN</button>
+        <label class="file-button"><span data-i18n="changeBackground">换背景</span><input id="backgroundInput" type="file" accept="image/*"></label>
+        <label class="file-button"><span data-i18n="importLayout">导入排版</span><input id="layoutInput" type="file" accept="application/json,.json"></label>
+        <button id="chooseOutputDir" data-i18n="outputFolder">输出文件夹</button>
+        <button id="saveLayout" data-i18n="saveLayout">保存排版</button>
+        <button id="exportPng" class="primary" data-i18n="exportPng">导出 PNG</button>
+      </div>
+    </header>
+
+    <main id="workspace" class="workspace">
+      <aside class="panel tools-panel">
+        <button id="addText">＋<br><span data-i18n="addText">添加文字</span></button>
+        <label class="file-button">＋ <span data-i18n="loadFont">加载本地字体</span><input id="fontInput" type="file" accept=".ttf,.otf,.woff,.woff2,font/*"></label>
+      </aside>
+
+      <section class="stage-wrap">
+        <div id="visualMode" class="visual-mode">
+          <div id="stage" class="stage">
+            <div id="canvasShell" class="canvas-shell"><canvas id="coverCanvas"></canvas></div>
+          </div>
+          <div class="stage-tools">
+            <div class="credits"><span data-i18n="developer">开发者：尚宸鸣</span> ｜ <span data-i18n="codexCredit">使用 Codex 协助开发</span> ｜ <a href="https://github.com/7panni/ai-poster-text-editor" target="_blank" rel="noreferrer" data-i18n="project">项目地址</a> ｜ <a href="https://7panni.com" target="_blank" rel="noreferrer" data-i18n="blog">作者博客</a></div>
+            <div class="zoom-tools"><button id="undo" class="icon" title="撤销 (⌘Z)">↶</button><button id="redo" class="icon" title="重做 (⇧⌘Z)">↷</button><span data-i18n="preview">预览</span><input id="zoom" type="range" min="15" max="120" value="55"><span id="zoomValue">55%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel properties-panel">
+        <div class="panel-head"><div class="side-tabs"><button id="propertiesTab" class="active" data-i18n="textSettings">文字设置</button><button id="sourceTab">layout.json</button></div><span id="selectionHint">点击文字选择</span></div>
+        <div id="propertyPane" class="side-pane"><div id="propertyBody" class="property-body"></div></div>
+        <div id="sourcePane" class="source-mode side-pane" hidden>
+          <div id="sourceEditor" class="source-editor"></div>
+          <div class="source-actions">
+            <span id="sourceStatus" class="source-status" data-i18n="pasteJson">可直接粘贴 AI 给你的 JSON</span>
+            <div class="source-buttons"><button id="formatSource" data-i18n="format">格式化</button><button id="applySource" class="primary" data-i18n="applyCanvas">应用到画布</button></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="vendor/source-editor.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      const $ = (s) => document.querySelector(s);
+      const canvas = $('#coverCanvas');
+      const ctx = canvas.getContext('2d');
+      const shell = $('#canvasShell');
+      const stage = $('#stage');
+      const propertyBody = $('#propertyBody');
+      const FONT_FALLBACK = '"Noto Serif SC", "Songti SC", STSong, serif';
+      const defaultState = {
+        canvas: { width: 1600, height: 900 }, backgroundData: null,
+        texts: [
+          { id:'series', content:'Nidāna', x:1120, y:130, font:'Cormorant Garamond', size:42, color:'#806b3f', weight:'400', letterSpacing:2, lineHeight:1.2, align:'center', visible:true },
+          { id:'subtitle', content:'写给 AI 工程师的', x:1120, y:260, font:'Noto Serif SC', size:62, color:'#354126', weight:'500', letterSpacing:8, lineHeight:1.2, align:'center', visible:true },
+          { id:'title_main', content:'早期佛教', x:1120, y:390, font:'Noto Serif SC', size:150, color:'#344022', weight:'700', letterSpacing:10, lineHeight:1.15, align:'center', visible:true },
+          { id:'title_sub', content:'导论', x:1120, y:560, font:'Noto Serif SC', size:120, color:'#344022', weight:'700', letterSpacing:20, lineHeight:1.15, align:'center', visible:true },
+          { id:'chapter', content:'前言', x:1120, y:700, font:'Noto Serif SC', size:52, color:'#806b3f', weight:'400', letterSpacing:4, lineHeight:1.2, align:'center', visible:true }
+        ]
+      };
+      let state = structuredClone(defaultState);
+      let selectedId = null;
+      let backgroundImage = null;
+      let zoom = .55;
+      let dragging = null;
+      let history = [], future = [], changeTimer = null, toastTimer = null;
+      let sourceEditor = null, sourceDirty = false;
+      let outputDirectoryHandle = null, backgroundBaseName = 'cover';
+      let currentLang = 'zh';
+      const I18N = {
+        zh:{appName:'AI海报文字快改',offline:'本地离线',developer:'开发者：尚宸鸣',codexCredit:'使用 Codex 协助开发',project:'项目地址',blog:'作者博客',changeBackground:'换背景',importLayout:'导入排版',outputFolder:'输出文件夹',saveLayout:'保存排版',exportPng:'导出 PNG',addText:'添加文字',loadFont:'加载本地字体',preview:'预览',textSettings:'文字设置',pasteJson:'可直接粘贴 AI 给你的 JSON',format:'格式化',applyCanvas:'应用到画布',selected:'已选择文字',clickSelect:'点击文字选择',empty:'点击画布中的文字进行编辑。<br>点击空白处可取消选择并预览成品。',content:'内容',text:'文字',type:'字形',font:'字体',size:'字号',weight:'字重',regular:'常规',medium:'中等',bold:'粗体',black:'特粗',spacing:'字距',lineHeight:'行高',color:'颜色',left:'左',center:'中',right:'右',position:'位置',moveHint:'也可直接拖动画布中的文字。方向键微调 1 px，按住 Shift 为 10 px。',deleteText:'删除这个文字图层',sourceCleaned:'已自动清理 GPT 格式',sourceValid:'格式正确',layers:'个文字图层',cannotApply:'不能应用',componentMissing:'源码编辑组件未加载',sourceApplied:'源码已应用到画布',formatted:'已清理并统一为标准格式',newText:'新文字',backgroundChanged:'背景已换为',layoutImported:'排版已导入',cannotRead:'无法读取',fontLoaded:'字体已加载',fontFailed:'字体加载失败，请使用 TTF / OTF / WOFF',folderUnsupported:'当前浏览器不支持固定输出文件夹',outputTo:'输出到',folderFailed:'无法使用这个文件夹',saved:'已保存',exported:'已导出',saveFailed:'保存失败',pngImage:'PNG 图片',jsonLayout:'JSON 排版'},
+        en:{appName:'AI Poster Text Editor',offline:'Local & offline',developer:'Developer: Chenming Shang',codexCredit:'Developed with Codex assistance',project:'Project',blog:'Author blog',changeBackground:'Background',importLayout:'Import layout',outputFolder:'Output folder',saveLayout:'Save layout',exportPng:'Export PNG',addText:'Add text',loadFont:'Load local font',preview:'Preview',textSettings:'Text',pasteJson:'Paste AI-generated JSON here',format:'Format',applyCanvas:'Apply to canvas',selected:'Text selected',clickSelect:'Click text to select',empty:'Click text on the canvas to edit it.<br>Click an empty area to clear selection and preview the result.',content:'Content',text:'Text',type:'Typography',font:'Font',size:'Font size',weight:'Weight',regular:'Regular',medium:'Medium',bold:'Bold',black:'Black',spacing:'Letter spacing',lineHeight:'Line height',color:'Color',left:'Left',center:'Center',right:'Right',position:'Position',moveHint:'Drag text directly on the canvas. Arrow keys move 1 px; Shift + arrow moves 10 px.',deleteText:'Delete this text layer',sourceCleaned:'AI formatting cleaned',sourceValid:'Valid JSON',layers:'text layers',cannotApply:'Cannot apply',componentMissing:'Source editor failed to load',sourceApplied:'Source applied to canvas',formatted:'Cleaned and converted to standard format',newText:'New text',backgroundChanged:'Background changed to',layoutImported:'Layout imported',cannotRead:'Cannot read',fontLoaded:'Font loaded',fontFailed:'Font failed to load. Use TTF, OTF, or WOFF.',folderUnsupported:'This browser cannot use a fixed output folder',outputTo:'Output folder',folderFailed:'Cannot use this folder',saved:'Saved',exported:'Exported',saveFailed:'Save failed',pngImage:'PNG image',jsonLayout:'JSON layout'}
+      };
+      function tr(key){return I18N[currentLang][key]??key;}
+      function applyLanguage(){document.documentElement.lang=currentLang==='zh'?'zh-CN':'en';document.title=tr('appName');document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=tr(el.dataset.i18n));if(outputDirectoryHandle)$('#chooseOutputDir').textContent=outputDirectoryHandle.name;$('#langToggle').textContent=currentLang==='zh'?'EN':'中文';$('#langToggle').title=currentLang==='zh'?'Switch to English':'切换到中文';renderProperties();$('#selectionHint').textContent=selected()?tr('selected'):tr('clickSelect');if(sourceEditor)validateSource(sourceEditor.getValue());}
+
+      function esc(v) { return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+      function selected() { return state.texts.find(t => t.id === selectedId); }
+      function snapshot() { return JSON.stringify(state); }
+      function pushHistory() { const s = snapshot(); if (history.at(-1) !== s) history.push(s); if (history.length > 60) history.shift(); future = []; updateHistoryButtons(); }
+      function scheduleHistory() { clearTimeout(changeTimer); changeTimer = setTimeout(pushHistory, 320); }
+      function restore(raw) { state = JSON.parse(raw); selectedId = selectedId==null?null:(state.texts.some(t=>t.id===selectedId)?selectedId:null); loadBackground(state.backgroundData).then(refresh); }
+      function updateHistoryButtons() { $('#undo').disabled = history.length < 2; $('#redo').disabled = !future.length; }
+      function undo() { if (history.length < 2) return; future.push(history.pop()); restore(history.at(-1)); }
+      function redo() { if (!future.length) return; const s = future.pop(); history.push(s); restore(s); }
+      function toast(message) { const el=$('#toast'); el.textContent=message; el.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),1800); }
+      function toLayout() { return {canvas:state.canvas,texts:state.texts.map(({id,content,x,y,font,size,color,weight,letterSpacing,lineHeight,align,visible})=>({id,content,x:Math.round(x),y:Math.round(y),font,size,color,weight,letter_spacing:letterSpacing,line_height:lineHeight,align,visible}))}; }
+      function layoutText() { return JSON.stringify(toLayout(), null, 2); }
+      function cleanAiJson(raw) {
+        const original=String(raw??'');
+        let cleaned=original.replace(/^\s*```(?:json)?\s*$/gmi,'').replace(/\\_/g,'_').trim();
+        const first=cleaned.indexOf('{'),last=cleaned.lastIndexOf('}');
+        if(first>0||last<cleaned.length-1)cleaned=first>=0&&last>first?cleaned.slice(first,last+1):cleaned;
+        return {cleaned,changed:cleaned!==original.trim()};
+      }
+      function parseLayout(raw) {
+        const prepared=cleanAiJson(raw);const data=JSON.parse(prepared.cleaned); if(!data || !Array.isArray(data.texts)) throw new Error('缺少 texts 数组');
+        const width=Number(data.canvas?.width), height=Number(data.canvas?.height); if(!(width>0&&height>0)) throw new Error('canvas.width 和 canvas.height 必须大于 0');
+        return {canvas:{width,height},texts:data.texts.map((t,i)=>({id:t.id||'text_'+i,content:String(t.content??t.text??''),x:Number(t.x)||0,y:Number(t.y)||0,font:t.font||t.font_family||t.fontFamily||'Noto Serif SC',size:Number(t.size??t.font_size??t.fontSize)||60,color:t.color||'#344022',weight:String((t.weight??t.font_weight??t.fontWeight)==='bold'?700:(t.weight??t.font_weight??t.fontWeight)==='medium'?500:(t.weight??t.font_weight??t.fontWeight)||400),letterSpacing:Number(t.letter_spacing??t.letterSpacing)||0,lineHeight:Number(t.line_height??t.lineHeight)||1.2,align:t.align||t.anchor||'left',visible:t.visible!==false})),cleaned:prepared.changed};
+      }
+      function validateSource(raw) { try { const data=parseLayout(raw); $('#sourceStatus').textContent=`${data.cleaned?tr('sourceCleaned'):tr('sourceValid')} · ${data.texts.length} ${tr('layers')} · ${data.canvas.width} × ${data.canvas.height}`; $('#sourceStatus').classList.remove('error'); $('#applySource').disabled=false; return data; } catch(error) { $('#sourceStatus').textContent=`${tr('cannotApply')}：${error.message}`; $('#sourceStatus').classList.add('error'); $('#applySource').disabled=true; return null; } }
+      function ensureSourceEditor() { if(sourceEditor) return; if(!window.CoverSourceEditor){toast(tr('componentMissing'));return;} sourceEditor=window.CoverSourceEditor.create($('#sourceEditor'),{doc:layoutText(),onChange:value=>{sourceDirty=true;validateSource(value);}}); validateSource(sourceEditor.getValue()); }
+      function setSideTab(tab) { const source=tab==='source'; $('#propertyPane').hidden=source; $('#sourcePane').hidden=!source; $('#propertiesTab').classList.toggle('active',!source); $('#sourceTab').classList.toggle('active',source); if(source){ensureSourceEditor();if(sourceEditor&&!sourceDirty)sourceEditor.setValue(layoutText());sourceEditor?.focus();} }
+      function applySource() { const data=validateSource(sourceEditor.getValue());if(!data)return;state.canvas=data.canvas;state.texts=data.texts;selectedId=null;sourceDirty=false;pushHistory();refresh();toast(tr('sourceApplied')); }
+
+      function createParchment() {
+        const p = document.createElement('canvas'); p.width=1600; p.height=900; const c=p.getContext('2d');
+        const g=c.createLinearGradient(0,0,1600,900); g.addColorStop(0,'#efe4c6'); g.addColorStop(.48,'#dfd1aa'); g.addColorStop(1,'#cbb987'); c.fillStyle=g; c.fillRect(0,0,1600,900);
+        const vignette=c.createRadialGradient(800,410,260,800,430,950); vignette.addColorStop(.45,'rgba(255,255,255,0)'); vignette.addColorStop(1,'rgba(80,57,24,.25)'); c.fillStyle=vignette; c.fillRect(0,0,1600,900);
+        c.strokeStyle='rgba(104,78,39,.46)'; c.lineWidth=3; c.strokeRect(34,34,1532,832); c.strokeStyle='rgba(104,78,39,.18)'; c.lineWidth=1; c.strokeRect(45,45,1510,810);
+        // abstract bodhi leaf and circuit veins; intentionally quiet so text remains editable.
+        c.save(); c.translate(340,445); c.rotate(-.22); c.fillStyle='rgba(77,91,48,.82)'; c.beginPath(); c.moveTo(0,-285); c.bezierCurveTo(-235,-170,-265,120,0,280); c.bezierCurveTo(265,120,235,-170,0,-285); c.fill();
+        c.strokeStyle='rgba(220,201,139,.72)'; c.lineWidth=5; c.beginPath(); c.moveTo(0,290); c.lineTo(0,-238); c.stroke(); c.lineWidth=2;
+        for(let i=-210;i<=170;i+=48){ c.beginPath(); c.moveTo(0,i); c.lineTo(-145-Math.abs(i)*.15,i-70); c.moveTo(0,i); c.lineTo(145+Math.abs(i)*.15,i-70); c.stroke(); }
+        c.restore();
+        c.strokeStyle='rgba(81,91,51,.45)'; c.lineWidth=2; const paths=[[340,700,500,700,500,620,660,620],[455,345,570,345,570,250,735,250],[500,525,690,525,690,435,820,435]];
+        paths.forEach(points=>{ c.beginPath(); c.moveTo(points[0],points[1]); for(let i=2;i<points.length;i+=2)c.lineTo(points[i],points[i+1]); c.stroke(); for(let i=2;i<points.length;i+=2){c.beginPath();c.arc(points[i],points[i+1],5,0,Math.PI*2);c.fillStyle='rgba(81,91,51,.55)';c.fill();}});
+        return p.toDataURL('image/jpeg',.92);
+      }
+      function loadBackground(src) { return new Promise(resolve => { if(!src){ backgroundImage=null; return resolve(); } const img=new Image(); img.onload=()=>{backgroundImage=img;resolve();}; img.onerror=()=>{backgroundImage=null;resolve();}; img.src=src; }); }
+
+      function fontString(t) { return `${t.weight || 400} ${t.size}px "${String(t.font).replace(/["\\]/g,'')}" , ${FONT_FALLBACK}`; }
+      function measureTracked(text, spacing) { if (!text) return 0; return [...text].reduce((n,ch)=>n+ctx.measureText(ch).width,0)+Math.max(0,[...text].length-1)*spacing; }
+      function drawTracked(text, x, y, t) {
+        const chars=[...text], width=measureTracked(text,t.letterSpacing||0); let start=x;
+        if(t.align==='center') start-=width/2; else if(t.align==='right') start-=width;
+        chars.forEach(ch=>{ ctx.fillText(ch,start,y); start+=ctx.measureText(ch).width+(t.letterSpacing||0); });
+      }
+      function bounds(t) {
+        ctx.font=fontString(t); const lines=String(t.content).split('\n'); const widths=lines.map(s=>measureTracked(s,t.letterSpacing||0)); const w=Math.max(1,...widths); const lh=t.size*(t.lineHeight||1.2); const h=Math.max(lh,lines.length*lh); let left=t.x; if(t.align==='center')left-=w/2; if(t.align==='right')left-=w; return {x:left,y:t.y-t.size*.86,w,h};
+      }
+      function render(selection=true) {
+        canvas.width=state.canvas.width; canvas.height=state.canvas.height;
+        if(backgroundImage) ctx.drawImage(backgroundImage,0,0,canvas.width,canvas.height); else {ctx.fillStyle='#ddd0aa';ctx.fillRect(0,0,canvas.width,canvas.height);}
+        ctx.textBaseline='alphabetic';
+        state.texts.filter(t=>t.visible!==false).forEach(t=>{ ctx.font=fontString(t);ctx.fillStyle=t.color; const lh=t.size*(t.lineHeight||1.2); String(t.content).split('\n').forEach((line,i)=>drawTracked(line,t.x,t.y+i*lh,t)); });
+        const active=selected(); if(selection && active && active.visible!==false){ const b=bounds(active); ctx.save();ctx.strokeStyle='#d2ac54';ctx.lineWidth=Math.max(2,3/zoom);ctx.setLineDash([10/zoom,7/zoom]);ctx.strokeRect(b.x-12,b.y-10,b.w+24,b.h+14);ctx.restore(); }
+      }
+      function fitCanvas() {
+        const maxW=Math.max(240,stage.clientWidth-48), maxH=Math.max(180,stage.clientHeight-48); const fit=Math.min(maxW/state.canvas.width,maxH/state.canvas.height,1); const factor=fit*(zoom/.55); shell.style.width=`${state.canvas.width*factor}px`; shell.style.height=`${state.canvas.height*factor}px`; shell.dataset.scale=factor; render();
+      }
+      function refresh() { renderProperties(); fitCanvas(); $('#selectionHint').textContent=selected()?tr('selected'):tr('clickSelect'); updateHistoryButtons(); }
+
+      function renderLayers() {}
+      function renderProperties() {
+        const t=selected(); if(!t){propertyBody.innerHTML=`<div class="empty-state">${tr('empty')}</div>`;return;}
+        propertyBody.innerHTML=`
+          <fieldset class="group"><legend>${tr('content')}</legend>
+            <label class="field">${tr('text')}<textarea data-key="content">${esc(t.content)}</textarea></label>
+          </fieldset>
+          <fieldset class="group"><legend>${tr('type')}</legend>
+            <label class="field">${tr('font')}<input data-key="font" value="${esc(t.font)}" list="fontList"><datalist id="fontList"><option>Noto Serif SC</option><option>Songti SC</option><option>STSong</option><option>PingFang SC</option><option>Heiti SC</option><option>Arial</option><option>Georgia</option><option>Cormorant Garamond</option></datalist></label>
+            <div class="grid-2"><label class="field">${tr('size')}<div class="size-stepper"><button type="button" data-size-step="-2" aria-label="${tr('size')} -2">−</button><input data-key="size" type="number" min="6" max="500" value="${t.size}"><button type="button" data-size-step="2" aria-label="${tr('size')} +2">＋</button></div></label><label class="field">${tr('weight')}<select data-key="weight"><option value="400" ${t.weight==='400'?'selected':''}>${tr('regular')}</option><option value="500" ${t.weight==='500'?'selected':''}>${tr('medium')}</option><option value="700" ${t.weight==='700'?'selected':''}>${tr('bold')}</option><option value="900" ${t.weight==='900'?'selected':''}>${tr('black')}</option></select></label></div>
+            <div class="grid-2"><label class="field">${tr('spacing')}<input data-key="letterSpacing" type="number" min="-20" max="100" value="${t.letterSpacing||0}"></label><label class="field">${tr('lineHeight')}<input data-key="lineHeight" type="number" min="0.7" max="3" step="0.05" value="${t.lineHeight||1.2}"></label></div>
+            <label class="field">${tr('color')}<div class="color-row"><input data-key="color" type="color" value="${esc(t.color)}"><input data-key="color" value="${esc(t.color)}"></div></label>
+            <div class="align-row"><button data-align="left" class="${t.align==='left'?'active':''}">${tr('left')}</button><button data-align="center" class="${t.align==='center'?'active':''}">${tr('center')}</button><button data-align="right" class="${t.align==='right'?'active':''}">${tr('right')}</button></div>
+          </fieldset>
+          <fieldset class="group"><legend>${tr('position')}</legend>
+            <div class="grid-2"><label class="field">X<input data-key="x" type="number" value="${Math.round(t.x)}"></label><label class="field">Y<input data-key="y" type="number" value="${Math.round(t.y)}"></label></div>
+            <p class="hint">${tr('moveHint')}</p>
+          </fieldset>
+          <button id="deleteText" class="danger">${tr('deleteText')}</button>`;
+      }
+
+      propertyBody.addEventListener('input', e=>{ const key=e.target.dataset.key,t=selected();if(!key||!t)return; let value=e.target.value;if(['size','letterSpacing','lineHeight','x','y'].includes(key))value=Number(value); t[key]=value; if(key==='color') propertyBody.querySelectorAll('[data-key=color]').forEach(i=>{if(i!==e.target)i.value=value}); renderLayers();fitCanvas();scheduleHistory(); });
+      propertyBody.addEventListener('change', e=>{ if(e.target.dataset.key){renderProperties();pushHistory();fitCanvas();} });
+      propertyBody.addEventListener('click', e=>{ const step=e.target.closest('[data-size-step]');if(step&&selected()){selected().size=Math.max(6,Math.min(500,selected().size+Number(step.dataset.sizeStep)));pushHistory();refresh();return;}const align=e.target.closest('[data-align]');if(align){selected().align=align.dataset.align;pushHistory();refresh();} if(e.target.id==='deleteText'){state.texts=state.texts.filter(t=>t.id!==selectedId);selectedId=null;pushHistory();refresh();} });
+
+      $('#addText').addEventListener('click',()=>{ const id='text_'+Date.now();state.texts.push({id,content:tr('newText'),x:state.canvas.width/2,y:state.canvas.height/2,font:'Noto Serif SC',size:90,color:'#344022',weight:'700',letterSpacing:4,lineHeight:1.2,align:'center',visible:true});selectedId=id;setSideTab('properties');pushHistory();refresh(); });
+      $('#langToggle').addEventListener('click',()=>{currentLang=currentLang==='zh'?'en':'zh';applyLanguage();});
+      $('#propertiesTab').addEventListener('click',()=>setSideTab('properties')); $('#sourceTab').addEventListener('click',()=>setSideTab('source'));
+      $('#applySource').addEventListener('click',applySource);
+      $('#formatSource').addEventListener('click',()=>{const data=validateSource(sourceEditor.getValue());if(!data)return;sourceEditor.setValue(JSON.stringify({canvas:data.canvas,texts:data.texts.map(({id,content,x,y,font,size,color,weight,letterSpacing,lineHeight,align,visible})=>({id,content,x,y,font,size,color,weight,letter_spacing:letterSpacing,line_height:lineHeight,align,visible}))},null,2));sourceDirty=true;validateSource(sourceEditor.getValue());toast(tr('formatted'));});
+      $('#undo').addEventListener('click',undo); $('#redo').addEventListener('click',redo);
+      $('#zoom').addEventListener('input',e=>{zoom=Number(e.target.value)/100;$('#zoomValue').textContent=e.target.value+'%';fitCanvas();});
+
+      $('#backgroundInput').addEventListener('change', async e=>{ const file=e.target.files[0];if(!file)return;backgroundBaseName=file.name.replace(/\.[^.]+$/,'')||'cover'; const data=await readFile(file,'data'); const img=new Image();img.onload=async()=>{state.backgroundData=data;state.canvas={width:img.naturalWidth,height:img.naturalHeight};await loadBackground(data);pushHistory();refresh();toast(`${tr('backgroundChanged')} ${img.naturalWidth} × ${img.naturalHeight}`);};img.src=data;e.target.value=''; });
+      $('#layoutInput').addEventListener('change', async e=>{ const file=e.target.files[0];if(!file)return; try{const data=parseLayout(await readFile(file,'text'));state.canvas=data.canvas;state.texts=data.texts;selectedId=null;sourceDirty=false;pushHistory();refresh();toast(tr('layoutImported'));}catch(error){toast(`${tr('cannotRead')}：${error.message}`);}e.target.value=''; });
+      $('#fontInput').addEventListener('change', async e=>{const file=e.target.files[0];if(!file)return;try{const family=file.name.replace(/\.[^.]+$/,'').replace(/[^\w\u4e00-\u9fff-]/g,' ');const face=new FontFace(family,await file.arrayBuffer());await face.load();document.fonts.add(face);if(selected()){selected().font=family;pushHistory();refresh();}toast(`${tr('fontLoaded')}：${family}`);}catch{toast(tr('fontFailed'));}e.target.value='';});
+      $('#chooseOutputDir').addEventListener('click',async()=>{if(!window.showDirectoryPicker){toast(tr('folderUnsupported'));return;}try{outputDirectoryHandle=await window.showDirectoryPicker({mode:'readwrite'});$('#chooseOutputDir').textContent=outputDirectoryHandle.name;toast(`${tr('outputTo')}：${outputDirectoryHandle.name}`);}catch(error){if(error.name!=='AbortError')toast(tr('folderFailed'));}});
+      $('#saveLayout').addEventListener('click',async()=>{const name=backgroundBaseName==='cover'?'layout.json':`${backgroundBaseName}-layout.json`;const ok=await saveBlob(new Blob([layoutText()],{type:'application/json'}),name,'application/json');if(ok)toast(`${tr('saved')} ${name}`);});
+      $('#exportPng').addEventListener('click',async()=>{render(false);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));render(true);const name=backgroundBaseName==='cover'?'cover.png':`${backgroundBaseName}-cover.png`;const ok=await saveBlob(blob,name,'image/png');if(ok)toast(`${tr('exported')} ${name} · ${state.canvas.width} × ${state.canvas.height}`);});
+
+      function readFile(file,type){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;type==='data'?r.readAsDataURL(file):r.readAsText(file);});}
+      function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+      async function saveBlob(blob,name,type){try{if(outputDirectoryHandle){const handle=await outputDirectoryHandle.getFileHandle(name,{create:true});const writable=await handle.createWritable();await writable.write(blob);await writable.close();return true;}if(window.showSaveFilePicker){const handle=await window.showSaveFilePicker({suggestedName:name,types:[{description:type==='image/png'?tr('pngImage'):tr('jsonLayout'),accept:{[type]:[type==='image/png'?'.png':'.json']}}]});const writable=await handle.createWritable();await writable.write(blob);await writable.close();return true;}download(blob,name);return true;}catch(error){if(error.name!=='AbortError')toast(`${tr('saveFailed')}：${error.message}`);return false;}}
+      function point(e){const rect=canvas.getBoundingClientRect();return{x:(e.clientX-rect.left)*state.canvas.width/rect.width,y:(e.clientY-rect.top)*state.canvas.height/rect.height};}
+      shell.addEventListener('pointerdown',e=>{const p=point(e);const hit=[...state.texts].reverse().find(t=>t.visible!==false&&(()=>{const b=bounds(t);return p.x>=b.x-20&&p.x<=b.x+b.w+20&&p.y>=b.y-20&&p.y<=b.y+b.h+20;})());if(hit){selectedId=hit.id;setSideTab('properties');dragging={pointer:e.pointerId,dx:p.x-hit.x,dy:p.y-hit.y,start:snapshot()};shell.setPointerCapture(e.pointerId);refresh();}else{selectedId=null;dragging=null;refresh();}});
+      shell.addEventListener('pointermove',e=>{if(!dragging||dragging.pointer!==e.pointerId)return;const p=point(e),t=selected();t.x=p.x-dragging.dx;t.y=p.y-dragging.dy;render();});
+      shell.addEventListener('pointerup',e=>{if(dragging?.pointer===e.pointerId){dragging=null;pushHistory();renderProperties();renderLayers();}});
+      window.addEventListener('keydown',e=>{const tag=document.activeElement?.tagName;if(['INPUT','TEXTAREA','SELECT'].includes(tag)||document.activeElement?.closest('.cm-editor'))return;if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}if(e.key==='Escape'&&selected()){selectedId=null;refresh();return;}const moves={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(moves[e.key]&&selected()){e.preventDefault();const n=e.shiftKey?10:1;selected().x+=moves[e.key][0]*n;selected().y+=moves[e.key][1]*n;pushHistory();refresh();}if((e.key==='Delete'||e.key==='Backspace')&&selected()){state.texts=state.texts.filter(t=>t.id!==selectedId);selectedId=null;pushHistory();refresh();}});
+      window.addEventListener('resize',fitCanvas);
+
+      state.backgroundData=createParchment();loadBackground(state.backgroundData).then(()=>{pushHistory();applyLanguage();refresh();});
+      if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    })();
+  </script>
+</body>
+</html>
